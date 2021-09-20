@@ -1,12 +1,7 @@
 {
-    // Windows, Linux
-    "compilerC": "gcc",
-    "compilerCpp": "g++",
-    // MacOS
-    // "compilerC": "clang",
-    // "compilerCpp": "clang++",
-    // For all OS
-    "make": "make",
+    "compilerC": "/usr/bin/gcc",
+    "compilerCpp": "/usr/bin/g++",
+    "make": "/usr/bin/make",
     // Editor settings
     "editor.tabSize": 4,
     "editor.rulers": [80, 120],
