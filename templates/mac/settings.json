@@ -1,14 +1,13 @@
 {
-    "compilerC": "/usr/bin/clang",
-    "compilerCpp": "/usr/bin/clang++",
-    "make": "/usr/bin/make",
+    "compilerC": "clang",
+    "compilerCpp": "clang++",
+    "make": "make",
     // Editor settings
     "editor.tabSize": 4,
     "editor.rulers": [80, 120],
     "editor.renderWhitespace": "trailing",
     "editor.suggestSelection": "first",
     "diffEditor.ignoreTrimWhitespace": false,
-    "terminal.integrated.defaultProfile.windows": "Command Prompt",
     // Explorer settings
     "explorer.confirmDragAndDrop": false,
     "explorer.confirmDelete": false,
@@ -24,7 +23,6 @@
     "git.autofetch": true,
     "git.confirmSync": false,
     // C/C++
-    "C_Cpp.clang_format_sortIncludes": true,
     "C_Cpp.vcFormat.indent.preserveComments": true,
     "C_Cpp.vcFormat.indent.namespaceContents": false,
     "C_Cpp.vcFormat.indent.caseContentsWhenBlock": true,
@@ -32,7 +30,6 @@
     "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": false,
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c99",
-    "clang-tidy.lintOnSave": false,
     // Cmake settings
     "cmake.configureOnOpen": false,
     "cmake.autoSelectActiveFolder": false,
@@ -47,41 +44,18 @@
     "doxdocgen.generic.includeTypeAtReturn": false,
     // IntelliSense AI Extension
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    // BetterComments
-    "better-comments.tags": [
-        {
-            "tag": "XXX",
-            "color": "#F8C471"
-        },
-        {
-            "tag": "WARN",
-            "color": "#FF6961"
-        },
-        {
-            "tag": "NOTE",
-            "color": "#3498DB"
-        },
-        {
-            "tag": "TODO",
-            "color": "#77C3EC"
-        }
-    ],
     // Formatting tools
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "prettier.tabWidth": 4,
     "[c]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-vscode.cpptools"
     },
     "[cpp]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-vscode.cpptools"
     },
-    // Telemetry settings
-    "partialDiff.enableTelemetry": false,
-    "telemetry.enableCrashReporter": false,
-    "redhat.telemetry.enabled": false,
     // Other extensions
     "formatContextMenu.closeAfterSave": true
 }

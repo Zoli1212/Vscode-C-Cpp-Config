@@ -1,8 +1,3 @@
-export enum Languages {
-  c = 'C',
-  cpp = 'Cpp',
-}
-
 export enum Compilers {
   gcc = 'gcc',
   gpp = 'g++',

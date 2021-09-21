@@ -26,7 +26,7 @@ const FILES = [
   'Makefile',
 ];
 
-export function activate(context: vscode.context) {
+export function activate(context: vscode.ExtensionContext) {
   if (
     !vscode.workspace.workspaceFolders ||
     vscode.workspace.workspaceFolders.length !== 1 ||
@@ -47,26 +47,47 @@ export function deactivate() {
   disposeItem(generateCCommandDisposable);
 }
 
-function initgenerateCCommandDisposable(context: vscode.context) {
+function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
   if (generateCCommandDisposable) return;
 
   const CommanddName = `${EXTENSION_NAME}.generateConfigC`;
   generateCCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     async () => {
-      const { templatePath, targetPath } = getFilepaths();
-      if (!templatePath || !targetPath) return;
+      const { templateOsPath, templatePath, targetPath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !targetPath) return;
 
-      mkdirRecursive(targetPath);
+      const toolsInstalled = checkCompilers();
+      if (!toolsInstalled) return;
+
+      if (!pathExists(targetPath)) mkdirRecursive(targetPath);
 
       FILES.forEach((filename) => {
         const targetFilename = path.join(targetPath, filename);
         const templateFilename = path.join(templatePath, filename);
+        const templateOsFilename = path.join(templateOsPath, filename);
 
-        if (!pathExists(templateFilename)) return;
-
-        const templateData = fs.readFileSync(templateFilename);
-        fs.writeFileSync(targetFilename, templateData);
+        if (filename === 'launch.json') {
+          const templateData: { [key: string]: string } = readJsonFile(
+            templateOsFilename,
+          );
+          writeJsonFile(targetFilename, templateData);
+        } else if (
+          filename === 'c_cpp_properties.json' ||
+          filename === 'settings.json'
+        ) {
+          const templateData = fs.readFileSync(templateOsFilename);
+          fs.writeFileSync(targetFilename, templateData);
+        } else if (filename === 'tasks.json') {
+          const templateData: { [key: string]: string } = readJsonFile(
+            templateFilename,
+          );
+          writeJsonFile(targetFilename, templateData);
+        } else {
+          // Makefile
+          const templateData = fs.readFileSync(templateFilename);
+          fs.writeFileSync(targetFilename, templateData);
+        }
       });
     },
   );
@@ -74,37 +95,46 @@ function initgenerateCCommandDisposable(context: vscode.context) {
   context?.subscriptions.push(generateCCommandDisposable);
 }
 
-function initgenerateCppCommandDisposable(context: vscode.context) {
+function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   if (generateCppCommandDisposable) return;
 
   const CommanddName = `${EXTENSION_NAME}.generateConfigCpp`;
   generateCppCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     async () => {
-      const { templatePath, targetPath } = getFilepaths();
-      if (!templatePath || !targetPath) return;
+      const { templateOsPath, templatePath, targetPath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !targetPath) return;
 
-      mkdirRecursive(targetPath);
+      const toolsInstalled = checkCompilers();
+      if (!toolsInstalled) return;
+
+      if (!pathExists(targetPath)) mkdirRecursive(targetPath);
 
       FILES.forEach((filename) => {
         const targetFilename = path.join(targetPath, filename);
         const templateFilename = path.join(templatePath, filename);
-
-        if (!pathExists(templateFilename)) return;
+        const templateOsFilename = path.join(templateOsPath, filename);
 
         if (filename === 'launch.json') {
-          const templateData: { [key: string]: string } = readJsonFile(
-            templateFilename,
+          let templateData: { [key: string]: string } = readJsonFile(
+            templateOsFilename,
           );
-          replaceLanguageLaunch(templateData);
+          templateData = replaceLanguageLaunch(templateData);
           writeJsonFile(targetFilename, templateData);
+        } else if (
+          filename === 'c_cpp_properties.json' ||
+          filename === 'settings.json'
+        ) {
+          const templateData = fs.readFileSync(templateOsFilename);
+          fs.writeFileSync(targetFilename, templateData);
         } else if (filename === 'tasks.json') {
-          const templateData: { [key: string]: string } = readJsonFile(
+          let templateData: { [key: string]: string } = readJsonFile(
             templateFilename,
           );
-          replaceLanguageTasks(templateData);
+          templateData = replaceLanguageTasks(templateData);
           writeJsonFile(targetFilename, templateData);
         } else {
+          // Makefile
           const templateData = fs.readFileSync(templateFilename);
           fs.writeFileSync(targetFilename, templateData);
         }
@@ -120,10 +150,161 @@ function getFilepaths() {
 
   const operatingSystem = getOperatingSystem();
 
-  const templatePath = path.join(extensionPath, 'templates', operatingSystem);
+  const templateOsPath = path.join(extensionPath, 'templates', operatingSystem);
+  const templatePath = path.join(extensionPath, 'templates');
   const targetPath = path.join(workspaceFolder, '.vscode');
 
-  return { templatePath, targetPath };
+  return { templateOsPath, templatePath, targetPath };
+}
+
+function checkCompilers() {
+  const operatingSystem = getOperatingSystem();
+
+  if (operatingSystem === OperatingSystems.windows) {
+    return checkCompilersWindows();
+  } else if (operatingSystem === OperatingSystems.linux) {
+    return checkCompilersLinux();
+  } else {
+    return checkCompilersMac();
+  }
+}
+
+function checkCompilersWindows() {
+  const searchCygwin64 = 'C:/cygwin64/bin/';
+  let cygwinInstallation: string;
+
+  if (!pathExists(searchCygwin64)) {
+    vscode.window.showErrorMessage('Cygwin installation not found');
+    return false;
+  } else {
+    cygwinInstallation = searchCygwin64;
+  }
+
+  let installationIncomplete = false;
+  const gccPath = path.join(cygwinInstallation, 'gcc.exe');
+  const gppPath = path.join(cygwinInstallation, 'g++.exe');
+  const gdbPath = path.join(cygwinInstallation, 'gdb.exe');
+  const makePath = path.join(cygwinInstallation, 'make.exe');
+
+  if (!pathExists(gccPath)) installationIncomplete = true;
+  if (!pathExists(gppPath)) installationIncomplete = true;
+  if (!pathExists(gdbPath)) installationIncomplete = true;
+  if (!pathExists(makePath)) installationIncomplete = true;
+
+  if (installationIncomplete) {
+    vscode.window.showErrorMessage('Cygwin installation incomplete');
+    return false;
+  }
+
+  return true;
+}
+
+function checkCompilersLinux() {
+  const userPath = '/usr/bin/';
+  const globalPath = '/bin/';
+  const localPath = '/usr/local/bin/';
+  let installationIncomplete = false;
+
+  const gccUserPath = path.join(userPath, 'gcc');
+  const gppUserPath = path.join(userPath, 'g++');
+  const gdbUserPath = path.join(userPath, 'gdb');
+  const makeUserPath = path.join(userPath, 'make');
+
+  const gccGlobalPath = path.join(globalPath, 'gcc');
+  const gppGlobalPath = path.join(globalPath, 'g++');
+  const gdbGlobalPath = path.join(globalPath, 'gdb');
+  const makeGlobalPath = path.join(globalPath, 'make');
+
+  const gccLocalPath = path.join(localPath, 'gcc');
+  const gppLocalPath = path.join(localPath, 'g++');
+  const gdbLocalPath = path.join(localPath, 'gdb');
+  const makeLocalPath = path.join(localPath, 'make');
+
+  if (
+    !pathExists(gccUserPath) &&
+    !pathExists(gccGlobalPath) &&
+    !pathExists(gccLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(gppUserPath) &&
+    !pathExists(gppGlobalPath) &&
+    !pathExists(gppLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(gdbUserPath) &&
+    !pathExists(gdbGlobalPath) &&
+    !pathExists(gdbLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(makeUserPath) &&
+    !pathExists(makeGlobalPath) &&
+    !pathExists(makeLocalPath)
+  )
+    installationIncomplete = true;
+
+  if (installationIncomplete) {
+    vscode.window.showErrorMessage('Compiler installation incomplete');
+    return false;
+  }
+
+  return true;
+}
+
+function checkCompilersMac() {
+  const userPath = '/usr/bin/';
+  const globalPath = '/bin/';
+  const localPath = '/usr/local/bin/';
+  let installationIncomplete = false;
+
+  const gccUserPath = path.join(userPath, 'clang');
+  const gppUserPath = path.join(userPath, 'clang++');
+  const gdbUserPath = path.join(userPath, 'lldb');
+  const makeUserPath = path.join(userPath, 'make');
+
+  const gccGlobalPath = path.join(globalPath, 'clang');
+  const gppGlobalPath = path.join(globalPath, 'clang++');
+  const gdbGlobalPath = path.join(globalPath, 'lldb');
+  const makeGlobalPath = path.join(globalPath, 'make');
+
+  const gccLocalPath = path.join(localPath, 'clang');
+  const gppLocalPath = path.join(localPath, 'clang++');
+  const gdbLocalPath = path.join(localPath, 'lldb');
+  const makeLocalPath = path.join(localPath, 'make');
+
+  if (
+    !pathExists(gccUserPath) &&
+    !pathExists(gccGlobalPath) &&
+    !pathExists(gccLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(gppUserPath) &&
+    !pathExists(gppGlobalPath) &&
+    !pathExists(gppLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(gdbUserPath) &&
+    !pathExists(gdbGlobalPath) &&
+    !pathExists(gdbLocalPath)
+  )
+    installationIncomplete = true;
+  if (
+    !pathExists(makeUserPath) &&
+    !pathExists(makeGlobalPath) &&
+    !pathExists(makeLocalPath)
+  )
+    installationIncomplete = true;
+
+  if (installationIncomplete) {
+    vscode.window.showErrorMessage('Compiler installation incomplete');
+    return false;
+  }
+
+  return true;
 }
 
 function replaceLanguageLaunch(data: { [key: string]: any }) {
@@ -134,9 +315,25 @@ function replaceLanguageLaunch(data: { [key: string]: any }) {
   data['configurations'][0]['preLaunchTask'] = data['configurations'][0][
     'preLaunchTask'
   ].replace('C:', 'Cpp:');
+
+  data['configurations'][1]['name'] = data['configurations'][1]['name'].replace(
+    'C:',
+    'Cpp:',
+  );
+  data['configurations'][1]['preLaunchTask'] = data['configurations'][1][
+    'preLaunchTask'
+  ].replace('C:', 'Cpp:');
+
+  return data;
 }
 
 function replaceLanguageTasks(data: { [key: string]: any }) {
+  data['tasks'][0]['args'][4] = 'CPP_COMPILER=${config:compilerCpp}';
+  data['tasks'][0]['args'][5] = 'LANGUAGE_MODE=Cpp';
+
+  data['tasks'][1]['args'][4] = 'CPP_COMPILER=${config:compilerCpp}';
+  data['tasks'][1]['args'][5] = 'LANGUAGE_MODE=Cpp';
+
   data['tasks'][2]['label'] = data['tasks'][2]['label'].replace('C:', 'Cpp:');
   data['tasks'][2]['args'][5] = 'C_COMPILER=${config:compilerCpp}';
   data['tasks'][2]['args'][6] = 'LANGUAGE_MODE=Cpp';
@@ -152,4 +349,6 @@ function replaceLanguageTasks(data: { [key: string]: any }) {
   data['tasks'][5]['label'] = data['tasks'][5]['label'].replace('C:', 'Cpp:');
   data['tasks'][5]['args'][5] = 'C_COMPILER=${config:compilerCpp}';
   data['tasks'][5]['args'][6] = 'LANGUAGE_MODE=Cpp';
+
+  return data;
 }

@@ -28,43 +28,6 @@ export function pathExists(filepath: string) {
   return true;
 }
 
-export function isSourceFile(fileExt: string) {
-  const fileExtLower = fileExt.toLowerCase();
-
-  if (isHeaderFile(fileExtLower)) {
-    return false;
-  }
-
-  if (!(isCSourceFile(fileExtLower) || isCppSourceFile(fileExtLower))) {
-    return false;
-  }
-
-  return true;
-}
-
-export function addFileExtensionDot(fileExt: string) {
-  if (!fileExt.includes('.')) {
-    fileExt = `.${fileExt}`;
-  }
-
-  return fileExt;
-}
-
-export function isHeaderFile(fileExtLower: string) {
-  fileExtLower = addFileExtensionDot(fileExtLower);
-  return ['.hpp', '.hh', '.hxx', '.h'].some((ext) => fileExtLower === ext);
-}
-
-export function isCppSourceFile(fileExtLower: string) {
-  fileExtLower = addFileExtensionDot(fileExtLower);
-  return ['.cpp', '.cc', '.cxx'].some((ext) => fileExtLower === ext);
-}
-
-export function isCSourceFile(fileExtLower: string) {
-  fileExtLower = addFileExtensionDot(fileExtLower);
-  return fileExtLower === '.c';
-}
-
 export function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
