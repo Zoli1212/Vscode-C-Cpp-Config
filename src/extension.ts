@@ -201,8 +201,6 @@ function checkCompilersWindows() {
 
 function checkCompilersLinux() {
   const userPath = '/usr/bin/';
-  const globalPath = '/bin/';
-  const localPath = '/usr/local/bin/';
   let installationIncomplete = false;
 
   const gccUserPath = path.join(userPath, 'gcc');
@@ -210,40 +208,10 @@ function checkCompilersLinux() {
   const gdbUserPath = path.join(userPath, 'gdb');
   const makeUserPath = path.join(userPath, 'make');
 
-  const gccGlobalPath = path.join(globalPath, 'gcc');
-  const gppGlobalPath = path.join(globalPath, 'g++');
-  const gdbGlobalPath = path.join(globalPath, 'gdb');
-  const makeGlobalPath = path.join(globalPath, 'make');
-
-  const gccLocalPath = path.join(localPath, 'gcc');
-  const gppLocalPath = path.join(localPath, 'g++');
-  const gdbLocalPath = path.join(localPath, 'gdb');
-  const makeLocalPath = path.join(localPath, 'make');
-
-  if (
-    !pathExists(gccUserPath) &&
-    !pathExists(gccGlobalPath) &&
-    !pathExists(gccLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(gppUserPath) &&
-    !pathExists(gppGlobalPath) &&
-    !pathExists(gppLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(gdbUserPath) &&
-    !pathExists(gdbGlobalPath) &&
-    !pathExists(gdbLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(makeUserPath) &&
-    !pathExists(makeGlobalPath) &&
-    !pathExists(makeLocalPath)
-  )
-    installationIncomplete = true;
+  if (!pathExists(gccUserPath)) installationIncomplete = true;
+  if (!pathExists(gppUserPath)) installationIncomplete = true;
+  if (!pathExists(gdbUserPath)) installationIncomplete = true;
+  if (!pathExists(makeUserPath)) installationIncomplete = true;
 
   if (installationIncomplete) {
     vscode.window.showErrorMessage('Compiler installation incomplete');
@@ -255,8 +223,6 @@ function checkCompilersLinux() {
 
 function checkCompilersMac() {
   const userPath = '/usr/bin/';
-  const globalPath = '/bin/';
-  const localPath = '/usr/local/bin/';
   let installationIncomplete = false;
 
   const gccUserPath = path.join(userPath, 'clang');
@@ -264,40 +230,10 @@ function checkCompilersMac() {
   const gdbUserPath = path.join(userPath, 'lldb');
   const makeUserPath = path.join(userPath, 'make');
 
-  const gccGlobalPath = path.join(globalPath, 'clang');
-  const gppGlobalPath = path.join(globalPath, 'clang++');
-  const gdbGlobalPath = path.join(globalPath, 'lldb');
-  const makeGlobalPath = path.join(globalPath, 'make');
-
-  const gccLocalPath = path.join(localPath, 'clang');
-  const gppLocalPath = path.join(localPath, 'clang++');
-  const gdbLocalPath = path.join(localPath, 'lldb');
-  const makeLocalPath = path.join(localPath, 'make');
-
-  if (
-    !pathExists(gccUserPath) &&
-    !pathExists(gccGlobalPath) &&
-    !pathExists(gccLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(gppUserPath) &&
-    !pathExists(gppGlobalPath) &&
-    !pathExists(gppLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(gdbUserPath) &&
-    !pathExists(gdbGlobalPath) &&
-    !pathExists(gdbLocalPath)
-  )
-    installationIncomplete = true;
-  if (
-    !pathExists(makeUserPath) &&
-    !pathExists(makeGlobalPath) &&
-    !pathExists(makeLocalPath)
-  )
-    installationIncomplete = true;
+  if (!pathExists(gccUserPath)) installationIncomplete = true;
+  if (!pathExists(gppUserPath)) installationIncomplete = true;
+  if (!pathExists(gdbUserPath)) installationIncomplete = true;
+  if (!pathExists(makeUserPath)) installationIncomplete = true;
 
   if (installationIncomplete) {
     vscode.window.showErrorMessage('Compiler installation incomplete');
