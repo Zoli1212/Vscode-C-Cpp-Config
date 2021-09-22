@@ -5,7 +5,7 @@ build/
 .mypy_cache
 .vscode-test
 package-lock.json
-
 *.vsix
 *.cpuprofile
 *.log
+*.exe
