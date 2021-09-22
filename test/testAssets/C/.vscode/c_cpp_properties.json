@@ -2,12 +2,18 @@
     "configurations": [
         {
             "name": "windows-cygwin-gcc-x64",
-            "includePath": ["${workspaceFolder}/**"],
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
             "compilerPath": "C:/cygwin64/bin/gcc.exe",
             "cStandard": "c99",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",
-            "compilerArgs": ["-Wall", "-Wextra", "-Wpedantic"]
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra",
+                "-Wpedantic"
+            ]
         }
     ],
     "version": 4
