@@ -1,8 +1,8 @@
 {
-    "name": "c-cpp-config",
+    "name": "vscode-c-cpp-config",
     "displayName": "C/C++ Config",
     "description": "Create all needed config files for my C/C++ courses.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "franneck94",
     "license": "MIT",
     "icon": "icon.png",

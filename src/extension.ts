@@ -67,17 +67,15 @@ function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
         const templateFilename = path.join(templatePath, filename);
         const templateOsFilename = path.join(templateOsPath, filename);
 
-        if (filename === 'launch.json') {
+        if (
+          filename === 'c_cpp_properties.json' ||
+          filename === 'settings.json' ||
+          filename === 'launch.json'
+        ) {
           const templateData: { [key: string]: string } = readJsonFile(
             templateOsFilename,
           );
           writeJsonFile(targetFilename, templateData);
-        } else if (
-          filename === 'c_cpp_properties.json' ||
-          filename === 'settings.json'
-        ) {
-          const templateData = fs.readFileSync(templateOsFilename);
-          fs.writeFileSync(targetFilename, templateData);
         } else if (filename === 'tasks.json') {
           const templateData: { [key: string]: string } = readJsonFile(
             templateFilename,
@@ -125,8 +123,10 @@ function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
           filename === 'c_cpp_properties.json' ||
           filename === 'settings.json'
         ) {
-          const templateData = fs.readFileSync(templateOsFilename);
-          fs.writeFileSync(targetFilename, templateData);
+          const templateData: { [key: string]: string } = readJsonFile(
+            templateOsFilename,
+          );
+          writeJsonFile(targetFilename, templateData);
         } else if (filename === 'tasks.json') {
           let templateData: { [key: string]: string } = readJsonFile(
             templateFilename,
