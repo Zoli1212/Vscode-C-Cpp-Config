@@ -1,7 +1,13 @@
 # VSCode C/C++ Config
 
-Create all needed config files for my C/C++ courses.
-Following files will be created with respect to the previous installed compiler/tools.
+Creates all needed config files for simple C/C++ projects.  
+Following files will be created:
+
+- settings.json: Best default settings for C/C++, CMake etc. extensions
+- c_cpp_properties.json: Best default settings for the compiler
+- tasks.json: Tasks to compile single C/C++ files or all C/C++ files in a folder
+- launch.json: Debug configs to debug C/C++ programs that were compiled by the tasks
+- Makefile: Makefile targets that are used in launch.json and tasks.json
 
 ## Software Requirements
 
@@ -11,11 +17,11 @@ Following files will be created with respect to the previous installed compiler/
 
 ## How to use
 
-Just run the command 'generateConfig' in VSCode's command palette.
+Just run the command 'Generate C Config Files' or 'Generate C++ Config Files' in VSCode's command palette.
 
 ## Important Notes
 
-The generated tasks won't work whenever there are whitespaces or non-extended ASCII characters in the filepaths.
+The generated tasks won't work whenever there are whitespaces or non-ASCII characters in the file paths and directory names.
 
 ## Release Notes
 

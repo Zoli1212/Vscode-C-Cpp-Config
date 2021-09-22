@@ -2,19 +2,9 @@ import * as fs from 'fs';
 import * as JSON5 from 'json5';
 import * as path from 'path';
 
-export function replaceBackslashes(text: string) {
-  return text.replace(/\\/g, '/');
-}
-
 export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });
-  } catch (err) {}
-}
-
-export function rmdirRecursive(dir: string) {
-  try {
-    fs.rmdirSync(dir, { recursive: true });
   } catch (err) {}
 }
 
@@ -26,14 +16,6 @@ export function pathExists(filepath: string) {
   }
 
   return true;
-}
-
-export function readDir(dir: string | fs.PathLike) {
-  try {
-    return fs.readdirSync(dir, { withFileTypes: true });
-  } catch (err) {
-    return undefined;
-  }
 }
 
 export function readJsonFile(filepath: string) {
@@ -58,7 +40,8 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
     mkdirRecursive(dirname);
   }
 
-  const jsonString = JSON.stringify(jsonContent, null, 2);
+  const spaces = 4;
+  const jsonString = JSON.stringify(jsonContent, null, spaces);
 
   try {
     fs.writeFileSync(outputFilePath, jsonString);
