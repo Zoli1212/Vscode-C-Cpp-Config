@@ -18,13 +18,14 @@ let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
 
 const EXTENSION_NAME = 'C_Cpp_Config';
-const FILES = [
+const VSCODE_DIR_FILES = [
   'launch.json',
   'tasks.json',
   'settings.json',
   'c_cpp_properties.json',
   'Makefile',
 ];
+const ROOT_DIR_FILES = ['.clang-format', '.editorconfig'];
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -54,18 +55,20 @@ function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
   generateCCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     async () => {
-      const { templateOsPath, templatePath, targetPath } = getFilepaths();
-      if (!templateOsPath || !templatePath || !targetPath) return;
+      const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !vscodePath) return;
 
       const toolsInstalled = checkCompilers();
       if (!toolsInstalled) return;
 
-      if (!pathExists(targetPath)) mkdirRecursive(targetPath);
+      if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
-      FILES.forEach((filename) => {
-        const targetFilename = path.join(targetPath, filename);
+      VSCODE_DIR_FILES.forEach((filename) => {
+        const targetFilename = path.join(vscodePath, filename);
         const templateFilename = path.join(templatePath, filename);
         const templateOsFilename = path.join(templateOsPath, filename);
+
+        if (pathExists(targetFilename)) return;
 
         if (
           filename === 'c_cpp_properties.json' ||
@@ -87,6 +90,18 @@ function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
           fs.writeFileSync(targetFilename, templateData);
         }
       });
+
+      ROOT_DIR_FILES.forEach((filename) => {
+        if (!workspaceFolder) return;
+
+        const targetFilename = path.join(workspaceFolder, filename);
+        const templateFilename = path.join(templatePath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        const templateData = fs.readFileSync(templateFilename);
+        fs.writeFileSync(targetFilename, templateData);
+      });
     },
   );
 
@@ -100,18 +115,20 @@ function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   generateCppCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     async () => {
-      const { templateOsPath, templatePath, targetPath } = getFilepaths();
-      if (!templateOsPath || !templatePath || !targetPath) return;
+      const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !vscodePath) return;
 
       const toolsInstalled = checkCompilers();
       if (!toolsInstalled) return;
 
-      if (!pathExists(targetPath)) mkdirRecursive(targetPath);
+      if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
-      FILES.forEach((filename) => {
-        const targetFilename = path.join(targetPath, filename);
+      VSCODE_DIR_FILES.forEach((filename) => {
+        const targetFilename = path.join(vscodePath, filename);
         const templateFilename = path.join(templatePath, filename);
         const templateOsFilename = path.join(templateOsPath, filename);
+
+        if (pathExists(targetFilename)) return;
 
         if (filename === 'launch.json') {
           let templateData: { [key: string]: string } = readJsonFile(
@@ -139,6 +156,18 @@ function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
           fs.writeFileSync(targetFilename, templateData);
         }
       });
+
+      ROOT_DIR_FILES.forEach((filename) => {
+        if (!workspaceFolder) return;
+
+        const targetFilename = path.join(workspaceFolder, filename);
+        const templateFilename = path.join(templatePath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        const templateData = fs.readFileSync(templateFilename);
+        fs.writeFileSync(targetFilename, templateData);
+      });
     },
   );
 
@@ -152,9 +181,9 @@ function getFilepaths() {
 
   const templateOsPath = path.join(extensionPath, 'templates', operatingSystem);
   const templatePath = path.join(extensionPath, 'templates');
-  const targetPath = path.join(workspaceFolder, '.vscode');
+  const vscodePath = path.join(workspaceFolder, '.vscode');
 
-  return { templateOsPath, templatePath, targetPath };
+  return { templateOsPath, templatePath, vscodePath };
 }
 
 function checkCompilers() {

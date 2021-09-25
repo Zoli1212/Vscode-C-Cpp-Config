@@ -3,10 +3,7 @@
     "compilerCpp": "g++",
     "make": "make",
     "editor.tabSize": 4,
-    "editor.rulers": [
-        80,
-        120
-    ],
+    "editor.rulers": [80, 120],
     "editor.renderWhitespace": "trailing",
     "editor.suggestSelection": "first",
     "diffEditor.ignoreTrimWhitespace": false,

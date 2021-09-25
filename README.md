@@ -1,13 +1,21 @@
 # VSCode C/C++ Config
 
 Creates all needed config files for simple C/C++ projects.  
-Following files will be created:
+
+Following files will be created in the local .vscode folder:
 
 - settings.json: Best default settings for C/C++, CMake etc. extensions
 - c_cpp_properties.json: Best default settings for the compiler
 - tasks.json: Tasks to compile single C/C++ files or all C/C++ files in a folder
 - launch.json: Debug configs to debug C/C++ programs that were compiled by the tasks
 - Makefile: Makefile targets that are used in launch.json and tasks.json
+
+Following files will be created in the root directory:
+
+- .clang-format: Formatting style if the user wants to use clang-format
+- .editorconfig: Standard file settings (line-feed, insert new-line, etc.)
+
+**Note**: If one of these files already exists, they won't be overridden.
 
 ## Software Requirements
 

@@ -2,28 +2,22 @@
     "compilerC": "gcc",
     "compilerCpp": "g++",
     "make": "make",
-    // Editor settings
     "editor.tabSize": 4,
     "editor.rulers": [80, 120],
     "editor.renderWhitespace": "trailing",
     "editor.suggestSelection": "first",
     "diffEditor.ignoreTrimWhitespace": false,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
-    // Explorer settings
     "explorer.confirmDragAndDrop": false,
     "explorer.confirmDelete": false,
-    // Files settings
     "files.autoSave": "onFocusChange",
     "files.associations": {
         ".clang*": "yaml"
     },
-    // Workbench settings
     "workbench.startupEditor": "newUntitledFile",
-    // Git settings
     "git.enableSmartCommit": true,
     "git.autofetch": true,
     "git.confirmSync": false,
-    // C/C++
     "C_Cpp.vcFormat.indent.preserveComments": true,
     "C_Cpp.vcFormat.indent.namespaceContents": false,
     "C_Cpp.vcFormat.indent.caseContentsWhenBlock": true,
@@ -31,11 +25,9 @@
     "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": false,
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c99",
-    // Cmake settings
     "cmake.configureOnOpen": false,
     "cmake.autoSelectActiveFolder": false,
     "cmake.configureOnEdit": false,
-    // C/C++ Doxygen Docstrings
     "doxdocgen.file.fileTemplate": "@file {name}",
     "doxdocgen.cpp.tparamTemplate": "@tparam {param} ",
     "doxdocgen.generic.briefTemplate": "@brief {text}",
@@ -43,9 +35,7 @@
     "doxdocgen.generic.paramTemplate": "@param {param} ",
     "doxdocgen.generic.returnTemplate": "@return",
     "doxdocgen.generic.includeTypeAtReturn": false,
-    // IntelliSense AI Extension
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    // Formatting tools
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "prettier.tabWidth": 4,
@@ -57,6 +47,5 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-vscode.cpptools"
     },
-    // Other extensions
     "formatContextMenu.closeAfterSave": true
 }
