@@ -2,7 +2,7 @@
     "name": "vscode-c-cpp-config",
     "displayName": "C/C++ Config",
     "description": "Creates all needed config files for simple C/C++ projects.",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "franneck94",
     "license": "MIT",
     "icon": "icon.png",
@@ -50,6 +50,18 @@
             {
                 "command": "C_Cpp_Config.generateConfigCpp",
                 "title": "Generate C++ Config Files",
+                "when": "C_Cpp_Config:activatedExtension",
+                "category": "C/C++ Config"
+            },
+            {
+                "command": "C_Cpp_Config.generateConfigCMinimal",
+                "title": "Generate C Config Files (Minimal)",
+                "when": "C_Cpp_Config:activatedExtension",
+                "category": "C/C++ Config"
+            },
+            {
+                "command": "C_Cpp_Config.generateConfigCppMinimal",
+                "title": "Generate C++ Config Files (Minimal)",
                 "when": "C_Cpp_Config:activatedExtension",
                 "category": "C/C++ Config"
             }

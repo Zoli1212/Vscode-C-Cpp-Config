@@ -2,13 +2,18 @@
 
 Creates all needed config files for simple C/C++ projects.  
 
-Following files will be created in the local .vscode folder:
+If the standard command is used, following files will be created in the local .vscode folder:
 
 - settings.json: Best default settings for C/C++, CMake etc. extensions
 - c_cpp_properties.json: Best default settings for the compiler
 - tasks.json: Tasks to compile single C/C++ files or all C/C++ files in a folder
 - launch.json: Debug configs to debug C/C++ programs that were compiled by the tasks
 - Makefile: Makefile targets that are used in launch.json and tasks.json
+
+if the minimal command is used, following files will be created in the local .vscode folder:
+
+- settings.json: Best default settings for C/C++, CMake etc. extensions
+- c_cpp_properties.json: Best default settings for the compiler
 
 Following files will be created in the root directory:
 
@@ -19,13 +24,13 @@ Following files will be created in the root directory:
 
 ## Software Requirements
 
-- 🔧 Windows: gcc/g++/gdb with Cygwin64
+- 🔧 Windows: gcc/g++/gdb with Cygwin64 (assuming installed at **C:/cygwin64/**)
 - 🔧 Linux: gcc/g++/gdb with package manager (e.g. apt-get on Debian)
 - 🔧 MacOS: clang/clang++/lldb with xcode
 
 ## How to use
 
-Just run the command 'Generate C Config Files' or 'Generate C++ Config Files' in VSCode's command palette.
+Just run the command 'Generate C Config Files', 'Generate C++ Config Files', 'Generate C Config Files Minimal' or 'Generate C++ Config Files Minimal' in VSCode's command palette.
 
 ## Important Notes
 

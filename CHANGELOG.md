@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.2.0: September 26, 2021
+
+- **Improvement**: Added targets for minimal projects (no Makefile, tasks.json and launch.json)
+
 ## Version 0.2.0: September 25, 2021
 
 - **Improvement**: Added generation of **.clang-format** and **.editorconfig**

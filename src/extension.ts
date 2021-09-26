@@ -14,6 +14,8 @@ import { disposeItem } from './utils/vscodeUtils';
 
 let generateCCommandDisposable: vscode.Disposable | undefined;
 let generateCppCommandDisposable: vscode.Disposable | undefined;
+let generateCMinimalCommandDisposable: vscode.Disposable | undefined;
+let generateCppMinimalCommandDisposable: vscode.Disposable | undefined;
 let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
 
@@ -25,6 +27,7 @@ const VSCODE_DIR_FILES = [
   'c_cpp_properties.json',
   'Makefile',
 ];
+const VSCODE_DIR_MINIMAL_FILES = ['settings.json', 'c_cpp_properties.json'];
 const ROOT_DIR_FILES = ['.clang-format', '.editorconfig'];
 
 export function activate(context: vscode.ExtensionContext) {
@@ -40,15 +43,17 @@ export function activate(context: vscode.ExtensionContext) {
   workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   extensionPath = context.extensionPath;
 
-  initgenerateCCommandDisposable(context);
-  initgenerateCppCommandDisposable(context);
+  initGenerateCCommandDisposable(context);
+  initGenerateCppCommandDisposable(context);
+  initGenerateCMinimalCommandDisposable(context);
+  initGenerateCppMinimalCommandDisposable(context);
 }
 
 export function deactivate() {
   disposeItem(generateCCommandDisposable);
 }
 
-function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
+function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   if (generateCCommandDisposable) return;
 
   const CommanddName = `${EXTENSION_NAME}.generateConfigC`;
@@ -108,7 +113,7 @@ function initgenerateCCommandDisposable(context: vscode.ExtensionContext) {
   context?.subscriptions.push(generateCCommandDisposable);
 }
 
-function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
+function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   if (generateCppCommandDisposable) return;
 
   const CommanddName = `${EXTENSION_NAME}.generateConfigCpp`;
@@ -172,6 +177,100 @@ function initgenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   );
 
   context?.subscriptions.push(generateCppCommandDisposable);
+}
+
+function initGenerateCMinimalCommandDisposable(
+  context: vscode.ExtensionContext,
+) {
+  if (generateCMinimalCommandDisposable) return;
+
+  const CommanddName = `${EXTENSION_NAME}.generateConfigCMinimal`;
+  generateCMinimalCommandDisposable = vscode.commands.registerCommand(
+    CommanddName,
+    async () => {
+      const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !vscodePath) return;
+
+      const toolsInstalled = checkCompilers();
+      if (!toolsInstalled) return;
+
+      if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+
+      VSCODE_DIR_MINIMAL_FILES.forEach((filename) => {
+        const targetFilename = path.join(vscodePath, filename);
+        const templateOsFilename = path.join(templateOsPath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        let templateData: { [key: string]: any } = readJsonFile(
+          templateOsFilename,
+        );
+        templateData = removeFullEntries(templateData);
+        writeJsonFile(targetFilename, templateData);
+      });
+
+      ROOT_DIR_FILES.forEach((filename) => {
+        if (!workspaceFolder) return;
+
+        const targetFilename = path.join(workspaceFolder, filename);
+        const templateFilename = path.join(templatePath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        const templateData = fs.readFileSync(templateFilename);
+        fs.writeFileSync(targetFilename, templateData);
+      });
+    },
+  );
+
+  context?.subscriptions.push(generateCMinimalCommandDisposable);
+}
+
+function initGenerateCppMinimalCommandDisposable(
+  context: vscode.ExtensionContext,
+) {
+  if (generateCppMinimalCommandDisposable) return;
+
+  const CommanddName = `${EXTENSION_NAME}.generateConfigCppMinimal`;
+  generateCppMinimalCommandDisposable = vscode.commands.registerCommand(
+    CommanddName,
+    async () => {
+      const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+      if (!templateOsPath || !templatePath || !vscodePath) return;
+
+      const toolsInstalled = checkCompilers();
+      if (!toolsInstalled) return;
+
+      if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+
+      VSCODE_DIR_MINIMAL_FILES.forEach((filename) => {
+        const targetFilename = path.join(vscodePath, filename);
+        const templateOsFilename = path.join(templateOsPath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        let templateData: { [key: string]: any } = readJsonFile(
+          templateOsFilename,
+        );
+        templateData = removeFullEntries(templateData);
+        writeJsonFile(targetFilename, templateData);
+      });
+
+      ROOT_DIR_FILES.forEach((filename) => {
+        if (!workspaceFolder) return;
+
+        const targetFilename = path.join(workspaceFolder, filename);
+        const templateFilename = path.join(templatePath, filename);
+
+        if (pathExists(targetFilename)) return;
+
+        const templateData = fs.readFileSync(templateFilename);
+        fs.writeFileSync(targetFilename, templateData);
+      });
+    },
+  );
+
+  context?.subscriptions.push(generateCppMinimalCommandDisposable);
 }
 
 function getFilepaths() {
@@ -309,6 +408,14 @@ function replaceLanguageTasks(data: { [key: string]: any }) {
 
   data['tasks'][4]['label'] = data['tasks'][4]['label'].replace('C:', 'Cpp:');
   data['tasks'][5]['label'] = data['tasks'][5]['label'].replace('C:', 'Cpp:');
+
+  return data;
+}
+
+function removeFullEntries(data: { [key: string]: any }) {
+  delete data['compilerC'];
+  delete data['compilerCpp'];
+  delete data['make'];
 
   return data;
 }
