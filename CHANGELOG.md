@@ -1,6 +1,6 @@
 # C/C++ Config Change Log
 
-## Version 0.2.0: September 26, 2021
+## Version 0.3.0: September 26, 2021
 
 - **Improvement**: Added targets for minimal projects (no Makefile, tasks.json and launch.json)
 
