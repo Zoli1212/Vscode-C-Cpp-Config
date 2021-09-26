@@ -64,8 +64,9 @@ function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   const CommanddName = `${EXTENSION_NAME}.generateConfigC`;
   generateCCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
-    writeFiles,
-    false,
+    () => {
+      writeFiles(false);
+    },
   );
 
   context?.subscriptions.push(generateCCommandDisposable);
@@ -77,8 +78,9 @@ function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   const CommanddName = `${EXTENSION_NAME}.generateConfigCpp`;
   generateCppCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
-    writeFiles,
-    true,
+    () => {
+      writeFiles(true);
+    },
   );
 
   context?.subscriptions.push(generateCppCommandDisposable);

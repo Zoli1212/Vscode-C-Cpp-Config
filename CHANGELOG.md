@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.4.0: September 26, 2021
+
+- **Improvement**: Added **.gitattributes** and **.gitingore**
+
 ## Version 0.3.0: September 26, 2021
 
 - **Improvement**: Added targets for minimal projects (no Makefile, tasks.json and launch.json)

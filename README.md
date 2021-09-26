@@ -19,6 +19,8 @@ Following files will be created in the root directory:
 
 - .clang-format: Formatting style if the user wants to use clang-format
 - .editorconfig: Standard file settings (line-feed, insert new-line, etc.)
+- .gitattributes: Gives attributes to pathnames
+- .gitingore: Specifies intentionally untracked files to ignore
 
 **Note**: If one of these files already exists, they won't be overridden.
 
