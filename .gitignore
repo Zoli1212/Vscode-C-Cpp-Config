@@ -10,11 +10,11 @@ package-lock.json
 *.log
 *.exe
 
-test/testAssets/C/*
+test/testAssets/C/
 !test/testAssets/C/main.c
-test/testAssets/Cpp/*
+test/testAssets/Cpp/
 !test/testAssets/Cpp/main.cc
-test/testAssets/CMinimal/*
+test/testAssets/CMinimal/
 !test/testAssets/CMinimal/main.c
-test/testAssets/CppMinimal/*
+test/testAssets/CppMinimal/
 !test/testAssets/CppMinimal/main.cc
