@@ -35,6 +35,13 @@ const ROOT_DIR_FILES = [
   '.gitignore',
 ];
 
+const ERROR_MESSAGE_CYGWIN =
+  'Cygwin installation not found at C:/cygwin64. Using default values.';
+const ERROR_MESSAGE_LINUX =
+  'Compiler installation incomplete. gcc/g++ not found in /usr/bin/';
+const ERROR_MESSAGE_MAC =
+  'Compiler installation incomplete. clang/clang++ not found in /usr/bin/';
+
 export function activate(context: vscode.ExtensionContext) {
   if (
     !vscode.workspace.workspaceFolders ||
@@ -130,11 +137,11 @@ function checkCompilers() {
   const operatingSystem = getOperatingSystem();
 
   if (operatingSystem === OperatingSystems.windows) {
-    return checkCompilersWindows();
+    checkCompilersWindows();
   } else if (operatingSystem === OperatingSystems.linux) {
-    return checkCompilersLinux();
+    checkCompilersLinux();
   } else {
-    return checkCompilersMac();
+    checkCompilersMac();
   }
 }
 
@@ -143,81 +150,70 @@ function checkCompilersWindows() {
   let cygwinInstallation: string;
 
   if (!pathExists(searchCygwin64)) {
-    vscode.window.showErrorMessage('Cygwin installation not found');
-    return false;
+    cygwinInstallation = '';
   } else {
     cygwinInstallation = searchCygwin64;
   }
 
   let installationIncomplete = false;
-  const gccPath = path.join(cygwinInstallation, 'gcc.exe');
-  const gppPath = path.join(cygwinInstallation, 'g++.exe');
-  const gdbPath = path.join(cygwinInstallation, 'gdb.exe');
-  const makePath = path.join(cygwinInstallation, 'make.exe');
+  const cCompilerUserPath = path.join(cygwinInstallation, 'gcc.exe');
+  const cppCompilerUserPath = path.join(cygwinInstallation, 'g++.exe');
+  const debuggerCompilerUserPath = path.join(cygwinInstallation, 'gdb.exe');
+  const makeCompilerUserPath = path.join(cygwinInstallation, 'make.exe');
 
-  if (!pathExists(gccPath)) installationIncomplete = true;
-  if (!pathExists(gppPath)) installationIncomplete = true;
-  if (!pathExists(gdbPath)) installationIncomplete = true;
-  if (!pathExists(makePath)) installationIncomplete = true;
+  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(debuggerCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(makeCompilerUserPath)) installationIncomplete = true;
 
   if (installationIncomplete) {
-    vscode.window.showErrorMessage('Cygwin installation incomplete');
-    return false;
+    vscode.window.showInformationMessage(ERROR_MESSAGE_CYGWIN);
   }
-
-  return true;
 }
 
 function checkCompilersLinux() {
   const userPath = '/usr/bin/';
   let installationIncomplete = false;
 
-  const gccUserPath = path.join(userPath, 'gcc');
-  const gppUserPath = path.join(userPath, 'g++');
-  const gdbUserPath = path.join(userPath, 'gdb');
+  const cCompilerUserPath = path.join(userPath, 'gcc');
+  const cppCompilerUserPath = path.join(userPath, 'g++');
+  const debuggerUserPath = path.join(userPath, 'gdb');
   const makeUserPath = path.join(userPath, 'make');
 
-  if (!pathExists(gccUserPath)) installationIncomplete = true;
-  if (!pathExists(gppUserPath)) installationIncomplete = true;
-  if (!pathExists(gdbUserPath)) installationIncomplete = true;
+  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(debuggerUserPath)) installationIncomplete = true;
   if (!pathExists(makeUserPath)) installationIncomplete = true;
 
   if (installationIncomplete) {
-    vscode.window.showErrorMessage('Compiler installation incomplete');
-    return false;
+    vscode.window.showInformationMessage(ERROR_MESSAGE_LINUX);
   }
-
-  return true;
 }
 
 function checkCompilersMac() {
   const userPath = '/usr/bin/';
   let installationIncomplete = false;
 
-  const gccUserPath = path.join(userPath, 'clang');
-  const gppUserPath = path.join(userPath, 'clang++');
-  const gdbUserPath = path.join(userPath, 'lldb');
+  const cCompilerUserPath = path.join(userPath, 'clang');
+  const cppCompilerUserPath = path.join(userPath, 'clang++');
+  const debuggerUserPath = path.join(userPath, 'lldb');
   const makeUserPath = path.join(userPath, 'make');
 
-  if (!pathExists(gccUserPath)) installationIncomplete = true;
-  if (!pathExists(gppUserPath)) installationIncomplete = true;
-  if (!pathExists(gdbUserPath)) installationIncomplete = true;
+  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
+  if (!pathExists(debuggerUserPath)) installationIncomplete = true;
   if (!pathExists(makeUserPath)) installationIncomplete = true;
 
   if (installationIncomplete) {
-    vscode.window.showErrorMessage('Compiler installation incomplete');
-    return false;
+    vscode.window.showInformationMessage(ERROR_MESSAGE_MAC);
   }
-
-  return true;
 }
 
 function writeFiles(isCppCommand: boolean) {
   const { templateOsPath, templatePath, vscodePath } = getFilepaths();
   if (!templateOsPath || !templatePath || !vscodePath) return;
 
-  const toolsInstalled = checkCompilers();
-  if (!toolsInstalled) return;
+  checkCompilers();
 
   if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
@@ -262,8 +258,7 @@ function writeMinimalFiles() {
   const { templateOsPath, templatePath, vscodePath } = getFilepaths();
   if (!templateOsPath || !templatePath || !vscodePath) return;
 
-  const toolsInstalled = checkCompilers();
-  if (!toolsInstalled) return;
+  checkCompilers();
 
   if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 

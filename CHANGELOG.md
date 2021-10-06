@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.5.0: October 6, 2021
+
+- **Info**: Instead of shwoing an error message when no compiler is found, it is now a information message and the extension does not abort.
+
 ## Version 0.4.0: September 26, 2021
 
 - **Improvement**: Added **.gitattributes** and **.gitingore**
