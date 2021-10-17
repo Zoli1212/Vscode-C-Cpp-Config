@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.6.0: October 17, 2021
+
+- **Info**: When no compiler installation was found, default paths are now used.
+
 ## Version 0.5.0: October 6, 2021
 
 - **Info**: Instead of shwoing an error message when no compiler is found, it is now a information message and the extension does not abort.
