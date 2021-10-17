@@ -35,12 +35,10 @@ const ROOT_DIR_FILES = [
   '.gitignore',
 ];
 
-const ERROR_MESSAGE_CYGWIN =
-  'Cygwin installation not found at C:/cygwin64. Using default values.';
-const ERROR_MESSAGE_LINUX =
-  'Compiler installation incomplete. gcc/g++ not found in /usr/bin/';
-const ERROR_MESSAGE_MAC =
-  'Compiler installation incomplete. clang/clang++ not found in /usr/bin/';
+let C_COMPILER_PATH: string | undefined = 'gcc';
+let CPP_COMPILER_PATH: string | undefined = 'g++';
+let DEBUGGER_PATH: string | undefined = 'gdb';
+let MAKE_PATH: string | undefined = 'make';
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -147,66 +145,49 @@ function checkCompilers() {
 
 function checkCompilersWindows() {
   const searchCygwin64 = 'C:/cygwin64/bin/';
+  const searchCygwin32 = 'C:/cygwin/bin/';
   let cygwinInstallation: string;
 
-  if (!pathExists(searchCygwin64)) {
-    cygwinInstallation = '';
-  } else {
+  if (pathExists(searchCygwin64)) {
     cygwinInstallation = searchCygwin64;
+  } else if (pathExists(searchCygwin32)) {
+    cygwinInstallation = searchCygwin32;
+  } else {
+    cygwinInstallation = '';
   }
 
-  let installationIncomplete = false;
-  const cCompilerUserPath = path.join(cygwinInstallation, 'gcc.exe');
-  const cppCompilerUserPath = path.join(cygwinInstallation, 'g++.exe');
-  const debuggerCompilerUserPath = path.join(cygwinInstallation, 'gdb.exe');
-  const makeCompilerUserPath = path.join(cygwinInstallation, 'make.exe');
-
-  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(debuggerCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(makeCompilerUserPath)) installationIncomplete = true;
-
-  if (installationIncomplete) {
-    vscode.window.showInformationMessage(ERROR_MESSAGE_CYGWIN);
-  }
+  C_COMPILER_PATH = path.join(cygwinInstallation, 'gcc.exe');
+  CPP_COMPILER_PATH = path.join(cygwinInstallation, 'g++.exe');
+  DEBUGGER_PATH = path.join(cygwinInstallation, 'gdb.exe');
+  MAKE_PATH = path.join(cygwinInstallation, 'make.exe');
 }
 
 function checkCompilersLinux() {
   const userPath = '/usr/bin/';
-  let installationIncomplete = false;
 
-  const cCompilerUserPath = path.join(userPath, 'gcc');
-  const cppCompilerUserPath = path.join(userPath, 'g++');
-  const debuggerUserPath = path.join(userPath, 'gdb');
-  const makeUserPath = path.join(userPath, 'make');
+  C_COMPILER_PATH = path.join(userPath, 'gcc');
+  CPP_COMPILER_PATH = path.join(userPath, 'g++');
+  DEBUGGER_PATH = path.join(userPath, 'gdb');
+  MAKE_PATH = path.join(userPath, 'make');
 
-  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(debuggerUserPath)) installationIncomplete = true;
-  if (!pathExists(makeUserPath)) installationIncomplete = true;
-
-  if (installationIncomplete) {
-    vscode.window.showInformationMessage(ERROR_MESSAGE_LINUX);
-  }
+  if (!pathExists(C_COMPILER_PATH)) C_COMPILER_PATH = 'gcc';
+  if (!pathExists(CPP_COMPILER_PATH)) CPP_COMPILER_PATH = 'g++';
+  if (!pathExists(DEBUGGER_PATH)) DEBUGGER_PATH = 'gdb';
+  if (!pathExists(MAKE_PATH)) MAKE_PATH = 'make';
 }
 
 function checkCompilersMac() {
   const userPath = '/usr/bin/';
-  let installationIncomplete = false;
 
-  const cCompilerUserPath = path.join(userPath, 'clang');
-  const cppCompilerUserPath = path.join(userPath, 'clang++');
-  const debuggerUserPath = path.join(userPath, 'lldb');
-  const makeUserPath = path.join(userPath, 'make');
+  C_COMPILER_PATH = path.join(userPath, 'clang');
+  CPP_COMPILER_PATH = path.join(userPath, 'clang++');
+  DEBUGGER_PATH = path.join(userPath, 'lldb');
+  MAKE_PATH = path.join(userPath, 'make');
 
-  if (!pathExists(cCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(cppCompilerUserPath)) installationIncomplete = true;
-  if (!pathExists(debuggerUserPath)) installationIncomplete = true;
-  if (!pathExists(makeUserPath)) installationIncomplete = true;
-
-  if (installationIncomplete) {
-    vscode.window.showInformationMessage(ERROR_MESSAGE_MAC);
-  }
+  if (!pathExists(C_COMPILER_PATH)) C_COMPILER_PATH = 'gcc';
+  if (!pathExists(CPP_COMPILER_PATH)) CPP_COMPILER_PATH = 'g++';
+  if (!pathExists(DEBUGGER_PATH)) DEBUGGER_PATH = 'gdb';
+  if (!pathExists(MAKE_PATH)) MAKE_PATH = 'make';
 }
 
 function writeFiles(isCppCommand: boolean) {
@@ -229,14 +210,19 @@ function writeFiles(isCppCommand: boolean) {
         templateOsFilename,
       );
       if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
+      templateData = replaceLaunch(templateData);
       writeJsonFile(targetFilename, templateData);
-    } else if (
-      filename === 'c_cpp_properties.json' ||
-      filename === 'settings.json'
-    ) {
-      const templateData: { [key: string]: string } = readJsonFile(
+    } else if (filename === 'c_cpp_properties.json') {
+      let templateData: { [key: string]: string } = readJsonFile(
         templateOsFilename,
       );
+      templateData = replaceProperties(templateData);
+      writeJsonFile(targetFilename, templateData);
+    } else if (filename === 'settings.json') {
+      let templateData: { [key: string]: string } = readJsonFile(
+        templateOsFilename,
+      );
+      templateData = replaceSettings(templateData);
       writeJsonFile(targetFilename, templateData);
     } else if (filename === 'tasks.json') {
       let templateData: { [key: string]: string } = readJsonFile(
@@ -341,6 +327,27 @@ function removeFullEntries(data: { [key: string]: any }) {
   delete data['compilerC'];
   delete data['compilerCpp'];
   delete data['make'];
+
+  return data;
+}
+
+function replaceSettings(data: { [key: string]: any }) {
+  data['compilerC'] = C_COMPILER_PATH;
+  data['compilerCpp'] = CPP_COMPILER_PATH;
+  data['make'] = MAKE_PATH;
+
+  return data;
+}
+
+function replaceLaunch(data: { [key: string]: any }) {
+  data['configurations'][0]['miDebuggerPath'] = DEBUGGER_PATH;
+  data['configurations'][1]['miDebuggerPath'] = DEBUGGER_PATH;
+
+  return data;
+}
+
+function replaceProperties(data: { [key: string]: any }) {
+  data['configurations'][0]['compilerPath'] = C_COMPILER_PATH;
 
   return data;
 }
