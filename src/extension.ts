@@ -35,10 +35,10 @@ const ROOT_DIR_FILES = [
   '.gitignore',
 ];
 
-let C_COMPILER_PATH: string | undefined = 'gcc';
-let CPP_COMPILER_PATH: string | undefined = 'g++';
-let DEBUGGER_PATH: string | undefined = 'gdb';
-let MAKE_PATH: string | undefined = 'make';
+let C_COMPILER_PATH: string = 'gcc';
+let CPP_COMPILER_PATH: string = 'g++';
+let DEBUGGER_PATH: string = 'gdb';
+let MAKE_PATH: string = 'make';
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -199,6 +199,7 @@ function writeFiles(isCppCommand: boolean) {
   if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
   VSCODE_DIR_FILES.forEach((filename) => {
+    const operatingSystem = getOperatingSystem();
     const targetFilename = path.join(vscodePath, filename);
     const templateFilename = path.join(templatePath, filename);
     const templateOsFilename = path.join(templateOsPath, filename);
@@ -210,7 +211,9 @@ function writeFiles(isCppCommand: boolean) {
         templateOsFilename,
       );
       if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
-      templateData = replaceLaunch(templateData);
+      if (operatingSystem !== OperatingSystems.mac) {
+        templateData = replaceLaunch(templateData);
+      }
       writeJsonFile(targetFilename, templateData);
     } else if (filename === 'c_cpp_properties.json') {
       let templateData: { [key: string]: string } = readJsonFile(

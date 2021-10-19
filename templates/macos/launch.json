@@ -5,45 +5,27 @@
             "name": "C: Debug (Single File)",
             "type": "cppdbg",
             "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}Debug",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
-            "program": "${fileDirname}/${fileBasenameNoExtension}Debug",
-            "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "C: Debug (Single File)",
-            "MIMode": "lldb",
-            "miDebuggerPath": "/usr/bin/lldb",
             "externalConsole": false,
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for lldb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
+            "MIMode": "lldb",
+            "preLaunchTask": "C: Debug (Single File)"
         },
         {
             "name": "C: Debug (Folder)",
             "type": "cppdbg",
             "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}Debug",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
-            "program": "${fileDirname}/${fileBasenameNoExtension}Debug",
-            "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "C: Debug (Folder)",
-            "MIMode": "lldb",
-            "miDebuggerPath": "/usr/bin/lldb",
             "externalConsole": false,
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for lldb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
+            "MIMode": "lldb",
+            "preLaunchTask": "C: Debug (Folder)"
         }
     ]
 }

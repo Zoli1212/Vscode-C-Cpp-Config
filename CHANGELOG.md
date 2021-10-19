@@ -1,12 +1,13 @@
 # C/C++ Config Change Log
 
-## Version 0.6.0: October 17, 2021
+## Version 0.6.0: October 19, 2021
 
-- **Info**: When no compiler installation was found, default paths are now used.
+- **Info**: When no compiler installation was found, default paths are now used
+- **Bugfix**: Fixed problem in mac launch.json file
 
 ## Version 0.5.0: October 6, 2021
 
-- **Info**: Instead of shwoing an error message when no compiler is found, it is now a information message and the extension does not abort.
+- **Info**: Instead of shwoing an error message when no compiler is found, it is now a information message and the extension does not abort
 
 ## Version 0.4.0: September 26, 2021
 
