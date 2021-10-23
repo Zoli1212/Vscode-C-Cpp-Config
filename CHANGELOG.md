@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.6.1: October 23, 2021
+
+- **Info**: Set StopAtEntry to true for Mac
+
 ## Version 0.6.0: October 19, 2021
 
 - **Info**: When no compiler installation was found, default paths are now used
