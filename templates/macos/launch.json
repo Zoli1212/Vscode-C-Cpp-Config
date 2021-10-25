@@ -10,9 +10,10 @@
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "lldb",
-            "preLaunchTask": "C: Debug (Single File)"
+            "preLaunchTask": "C: Debug (Single File)",
+            "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "name": "C: Debug (Folder)",
@@ -23,9 +24,10 @@
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "lldb",
-            "preLaunchTask": "C: Debug (Folder)"
+            "preLaunchTask": "C: Debug (Folder)",
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }

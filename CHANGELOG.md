@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.6.2: October 25, 2021
+
+- **Info**: Updated Mac launch config
+
 ## Version 0.6.1: October 23, 2021
 
 - **Info**: Set StopAtEntry to true for Mac
