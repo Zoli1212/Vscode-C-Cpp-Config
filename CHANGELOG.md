@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 0.7.0: November 2, 2021
+
+- **Info**: Corrected C++ Config Tasks
+
 ## Version 0.6.2: October 25, 2021
 
 - **Info**: Updated Mac launch config

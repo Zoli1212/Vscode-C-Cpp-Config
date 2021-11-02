@@ -313,11 +313,11 @@ function replaceLanguageTasks(data: { [key: string]: any }) {
   data['tasks'][1]['args'][5] = 'LANGUAGE_MODE=Cpp';
 
   data['tasks'][2]['label'] = data['tasks'][2]['label'].replace('C:', 'Cpp:');
-  data['tasks'][2]['args'][5] = 'C_COMPILER=${config:compilerCpp}';
+  data['tasks'][2]['args'][5] = 'CPP_COMPILER=${config:compilerCpp}';
   data['tasks'][2]['args'][6] = 'LANGUAGE_MODE=Cpp';
 
   data['tasks'][3]['label'] = data['tasks'][3]['label'].replace('C:', 'Cpp:');
-  data['tasks'][3]['args'][5] = 'C_COMPILER=${config:compilerCpp}';
+  data['tasks'][3]['args'][5] = 'CPP_COMPILER=${config:compilerCpp}';
   data['tasks'][3]['args'][6] = 'LANGUAGE_MODE=Cpp';
 
   data['tasks'][4]['label'] = data['tasks'][4]['label'].replace('C:', 'Cpp:');
