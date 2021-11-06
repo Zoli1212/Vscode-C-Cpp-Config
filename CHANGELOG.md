@@ -1,5 +1,14 @@
 # C/C++ Config Change Log
 
+## Version 1.0.0: November 6, 2021
+
+- **Bugfix**: Clang-tidy was not created
+- **Info**: Re-triggering the command will now overwrite exisiting config files
+
+## Version 0.8.0: November 4, 2021
+
+- **Info**: Added clang tidy, updated clang-format
+
 ## Version 0.7.0: November 2, 2021
 
 - **Info**: Corrected C++ Config Tasks

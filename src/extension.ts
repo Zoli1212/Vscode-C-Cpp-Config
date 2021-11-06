@@ -30,6 +30,7 @@ const VSCODE_DIR_FILES = [
 const VSCODE_DIR_MINIMAL_FILES = ['settings.json', 'c_cpp_properties.json'];
 const ROOT_DIR_FILES = [
   '.clang-format',
+  '.clang-tidy',
   '.editorconfig',
   '.gitattributes',
   '.gitignore',
@@ -204,8 +205,6 @@ function writeFiles(isCppCommand: boolean) {
     const templateFilename = path.join(templatePath, filename);
     const templateOsFilename = path.join(templateOsPath, filename);
 
-    if (pathExists(targetFilename)) return;
-
     if (filename === 'launch.json') {
       let templateData: { [key: string]: string } = readJsonFile(
         templateOsFilename,
@@ -262,8 +261,6 @@ function writeRootDirFiles(templatePath: string) {
     const targetFilename = path.join(workspaceFolder, filename);
     const templateFilename = path.join(templatePath, filename);
 
-    if (pathExists(targetFilename)) return;
-
     const templateData = fs.readFileSync(templateFilename);
     fs.writeFileSync(targetFilename, templateData);
   });
@@ -276,8 +273,6 @@ function writeLocalVscodeDirMinimalFiles(
   VSCODE_DIR_MINIMAL_FILES.forEach((filename) => {
     const targetFilename = path.join(vscodePath, filename);
     const templateOsFilename = path.join(templateOsPath, filename);
-
-    if (pathExists(targetFilename)) return;
 
     let templateData: { [key: string]: any } = readJsonFile(templateOsFilename);
     templateData = removeFullEntries(templateData);
