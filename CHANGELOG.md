@@ -1,5 +1,10 @@
 # C/C++ Config Change Log
 
+## Version 1.1.0: November 7, 2021
+
+- **Info**: Dumped full clang-format config (no changes)
+- **Info**: Now clangFormat is default C/C++ formatter (installed by Microsoft's C/C++ extension)
+
 ## Version 1.0.0: November 6, 2021
 
 - **Bugfix**: Clang-tidy was not created
