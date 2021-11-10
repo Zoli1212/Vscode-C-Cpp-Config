@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 1.1.1: November 10, 2021
+
+- **Info**: Fixed issue in clang-tidy template
+
 ## Version 1.1.0: November 7, 2021
 
 - **Info**: Dumped full clang-format config (no changes)
