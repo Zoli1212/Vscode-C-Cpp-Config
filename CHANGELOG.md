@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 1.1.2: November 10, 2021
+
+- **Info**: For Windows users the paths to the compiler tools are now stored with single slashed "/" instead of double back slashes "\\" due to issues with the properties handler of Microsoft's C/C++ extension
+
 ## Version 1.1.1: November 10, 2021
 
 - **Info**: Fixed issue in clang-tidy template

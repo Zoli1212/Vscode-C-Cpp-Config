@@ -2,6 +2,10 @@ import * as fs from 'fs';
 import * as JSON5 from 'json5';
 import * as path from 'path';
 
+export function replaceBackslashes(text: string) {
+  return text.replace(/\\/g, '/');
+}
+
 export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });

@@ -6,6 +6,7 @@ import {
 	mkdirRecursive,
 	pathExists,
 	readJsonFile,
+	replaceBackslashes,
 	writeJsonFile,
 } from './utils/fileUtils';
 import { getOperatingSystem } from './utils/systemUtils';
@@ -18,6 +19,7 @@ let generateCMinimalCommandDisposable: vscode.Disposable | undefined;
 let generateCppMinimalCommandDisposable: vscode.Disposable | undefined;
 let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
+let operatingSystem: OperatingSystems | undefined;
 
 const EXTENSION_NAME = 'C_Cpp_Config';
 const VSCODE_DIR_FILES = [
@@ -53,6 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   extensionPath = context.extensionPath;
+  operatingSystem = getOperatingSystem();
 
   initGenerateCCommandDisposable(context);
   initGenerateCppCommandDisposable(context);
@@ -121,9 +124,9 @@ function initGenerateCppMinimalCommandDisposable(
 }
 
 function getFilepaths() {
-  if (!extensionPath || !workspaceFolder) return {};
-
-  const operatingSystem = getOperatingSystem();
+  if (!extensionPath || !workspaceFolder || !operatingSystem) {
+    return {};
+  }
 
   const templateOsPath = path.join(extensionPath, 'templates', operatingSystem);
   const templatePath = path.join(extensionPath, 'templates');
@@ -133,7 +136,7 @@ function getFilepaths() {
 }
 
 function checkCompilers() {
-  const operatingSystem = getOperatingSystem();
+  if (!operatingSystem) return;
 
   if (operatingSystem === OperatingSystems.windows) {
     checkCompilersWindows();
@@ -200,7 +203,6 @@ function writeFiles(isCppCommand: boolean) {
   if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
   VSCODE_DIR_FILES.forEach((filename) => {
-    const operatingSystem = getOperatingSystem();
     const targetFilename = path.join(vscodePath, filename);
     const templateFilename = path.join(templatePath, filename);
     const templateOsFilename = path.join(templateOsPath, filename);
@@ -210,7 +212,10 @@ function writeFiles(isCppCommand: boolean) {
         templateOsFilename,
       );
       if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
-      if (operatingSystem !== OperatingSystems.mac) {
+      if (
+        operatingSystem !== undefined &&
+        operatingSystem !== OperatingSystems.mac
+      ) {
         templateData = replaceLaunch(templateData);
       }
       writeJsonFile(targetFilename, templateData);
@@ -330,22 +335,36 @@ function removeFullEntries(data: { [key: string]: any }) {
 }
 
 function replaceSettings(data: { [key: string]: any }) {
-  data['compilerC'] = C_COMPILER_PATH;
-  data['compilerCpp'] = CPP_COMPILER_PATH;
-  data['make'] = MAKE_PATH;
+  data['compilerC'] = replaceValueBasedOnEnv(C_COMPILER_PATH);
+  data['compilerCpp'] = replaceValueBasedOnEnv(CPP_COMPILER_PATH);
+  data['make'] = replaceValueBasedOnEnv(MAKE_PATH);
 
   return data;
 }
 
 function replaceLaunch(data: { [key: string]: any }) {
-  data['configurations'][0]['miDebuggerPath'] = DEBUGGER_PATH;
-  data['configurations'][1]['miDebuggerPath'] = DEBUGGER_PATH;
+  data['configurations'][0]['miDebuggerPath'] = replaceValueBasedOnEnv(
+    DEBUGGER_PATH,
+  );
+  data['configurations'][1]['miDebuggerPath'] = replaceValueBasedOnEnv(
+    DEBUGGER_PATH,
+  );
 
   return data;
 }
 
 function replaceProperties(data: { [key: string]: any }) {
-  data['configurations'][0]['compilerPath'] = C_COMPILER_PATH;
+  data['configurations'][0]['compilerPath'] = replaceValueBasedOnEnv(
+    C_COMPILER_PATH,
+  );
 
   return data;
+}
+
+function replaceValueBasedOnEnv(path: string) {
+  if (operatingSystem === OperatingSystems.windows) {
+    path = replaceBackslashes(path);
+  }
+
+  return path;
 }
