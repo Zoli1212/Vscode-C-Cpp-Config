@@ -20,6 +20,7 @@ let generateCppMinimalCommandDisposable: vscode.Disposable | undefined;
 let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
 let operatingSystem: OperatingSystems | undefined;
+let isCProject: boolean = false;
 
 const EXTENSION_NAME = 'C_Cpp_Config';
 const VSCODE_DIR_FILES = [
@@ -79,6 +80,8 @@ function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   );
 
   context?.subscriptions.push(generateCCommandDisposable);
+
+  isCProject = true;
 }
 
 function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
@@ -107,6 +110,8 @@ function initGenerateCMinimalCommandDisposable(
   );
 
   context?.subscriptions.push(generateCMinimalCommandDisposable);
+
+  isCProject = true;
 }
 
 function initGenerateCppMinimalCommandDisposable(
@@ -264,7 +269,14 @@ function writeRootDirFiles(templatePath: string) {
     if (!workspaceFolder) return;
 
     const targetFilename = path.join(workspaceFolder, filename);
-    const templateFilename = path.join(templatePath, filename);
+    let templateFilename = path.join(templatePath, filename);
+
+    if (filename === '.clang-tidy' && isCProject) {
+      templateFilename = templateFilename.replace(
+        '.clang-tidy',
+        '.clang-tidy_c',
+      );
+    }
 
     const templateData = fs.readFileSync(templateFilename);
     fs.writeFileSync(targetFilename, templateData);

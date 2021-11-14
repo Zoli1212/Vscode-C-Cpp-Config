@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 1.2.0: November 14, 2021
+
+- **Info**: Added own clang-tidy template for C projects
+
 ## Version 1.1.3: November 12, 2021
 
 - **Info**: Fixed issue with extension commands
