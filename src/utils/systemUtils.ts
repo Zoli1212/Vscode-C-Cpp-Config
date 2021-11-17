@@ -4,15 +4,15 @@ import { OperatingSystems } from './types';
 
 export function getOperatingSystem() {
   const platformName = platform();
-  let operatingSystem: OperatingSystems;
+  let OPERATING_SYSTEM: OperatingSystems;
 
   if (platformName === 'win32') {
-    operatingSystem = OperatingSystems.windows;
+    OPERATING_SYSTEM = OperatingSystems.windows;
   } else if (platformName === 'darwin') {
-    operatingSystem = OperatingSystems.mac;
+    OPERATING_SYSTEM = OperatingSystems.mac;
   } else {
-    operatingSystem = OperatingSystems.linux;
+    OPERATING_SYSTEM = OperatingSystems.linux;
   }
 
-  return operatingSystem;
+  return OPERATING_SYSTEM;
 }

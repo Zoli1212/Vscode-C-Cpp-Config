@@ -2,7 +2,7 @@
     "name": "vscode-c-cpp-config",
     "displayName": "C/C++ Config",
     "description": "Creates all needed config files for simple C/C++ projects.",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "publisher": "franneck94",
     "license": "MIT",
     "icon": "icon.png",
@@ -53,15 +53,45 @@
             },
             {
                 "command": "C_Cpp_Config.generateConfigCMinimal",
-                "title": "Generate C Config Files (Minimal)",
+                "title": "Generate C Config Files (Minimal Settings)",
                 "category": "C/C++ Config"
             },
             {
                 "command": "C_Cpp_Config.generateConfigCppMinimal",
-                "title": "Generate C++ Config Files (Minimal)",
+                "title": "Generate C++ Config Files (Minimal Settings)",
                 "category": "C/C++ Config"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "C/C++ Runner",
+            "properties": {
+                "C_Cpp_Config.cCompilerPath": {
+                    "type": "string",
+                    "default": "gcc",
+                    "description": "The path to the C Compiler (either gcc or clang).",
+                    "scope": "resource"
+                },
+                "C_Cpp_Config.cppCompilerPath": {
+                    "type": "string",
+                    "default": "g++",
+                    "description": "The path to the C++ Compiler (either g++ or clang++).",
+                    "scope": "resource"
+                },
+                "C_Cpp_Config.debuggerPath": {
+                    "type": "string",
+                    "default": "gdb",
+                    "description": "The path to the debugger (either gdb or lldb).",
+                    "scope": "resource"
+                },
+                "C_Cpp_Config.makePath": {
+                    "type": "string",
+                    "default": "make",
+                    "description": "The path to C_Cpp_Config.debuggerPath.",
+                    "scope": "resource"
+                }
+            }
+        }
     },
     "scripts": {
         "webpack": "webpack --mode development",

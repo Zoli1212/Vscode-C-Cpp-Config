@@ -1,7 +1,8 @@
 {
-    "compilerC": "clang",
-    "compilerCpp": "clang++",
-    "make": "make",
+    "C_Cpp_Config.cCompilerPath": "clang",
+    "C_Cpp_Config.cppCompilerPath": "clang++",
+    "C_Cpp_Config.debuggerPath": "lldb",
+    "C_Cpp_Config.makePath": "make",
     // Editor settings
     "editor.tabSize": 4,
     "editor.rulers": [80, 120],

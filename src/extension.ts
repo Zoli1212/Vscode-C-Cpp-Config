@@ -3,10 +3,22 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
+	checkCompilersLinux,
+	checkCompilersMac,
+	checkCompilersWindows,
+} from './compilers';
+import {
+	removeFullEntries,
+	replaceLanguageLaunch,
+	replaceLanguageTasks,
+	replaceLaunch,
+	replaceProperties,
+	replaceSettings,
+} from './replacer';
+import {
 	mkdirRecursive,
 	pathExists,
 	readJsonFile,
-	replaceBackslashes,
 	writeJsonFile,
 } from './utils/fileUtils';
 import { getOperatingSystem } from './utils/systemUtils';
@@ -19,8 +31,6 @@ let generateCMinimalCommandDisposable: vscode.Disposable | undefined;
 let generateCppMinimalCommandDisposable: vscode.Disposable | undefined;
 let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
-let operatingSystem: OperatingSystems | undefined;
-let isCProject: boolean = false;
 
 const EXTENSION_NAME = 'C_Cpp_Config';
 const VSCODE_DIR_FILES = [
@@ -39,10 +49,11 @@ const ROOT_DIR_FILES = [
   '.gitignore',
 ];
 
-let C_COMPILER_PATH: string = 'gcc';
-let CPP_COMPILER_PATH: string = 'g++';
-let DEBUGGER_PATH: string = 'gdb';
-let MAKE_PATH: string = 'make';
+export let C_COMPILER_PATH: string = 'gcc';
+export let CPP_COMPILER_PATH: string = 'g++';
+export let DEBUGGER_PATH: string = 'gdb';
+export let MAKE_PATH: string = 'make';
+export let OPERATING_SYSTEM: OperatingSystems | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -56,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   extensionPath = context.extensionPath;
-  operatingSystem = getOperatingSystem();
+  OPERATING_SYSTEM = getOperatingSystem();
 
   initGenerateCCommandDisposable(context);
   initGenerateCppCommandDisposable(context);
@@ -66,6 +77,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   disposeItem(generateCCommandDisposable);
+}
+
+export function checkCompilers() {
+  if (!OPERATING_SYSTEM) return;
+
+  let compilerPaths: {
+    c_compiler_path: string;
+    cpp_compiler_path: string;
+    debugger_path: string;
+    make_path: string;
+  };
+
+  if (OPERATING_SYSTEM === OperatingSystems.windows) {
+    compilerPaths = checkCompilersWindows();
+  } else if (OPERATING_SYSTEM === OperatingSystems.linux) {
+    compilerPaths = checkCompilersLinux();
+  } else {
+    compilerPaths = checkCompilersMac();
+  }
+
+  C_COMPILER_PATH = compilerPaths.c_compiler_path;
+  CPP_COMPILER_PATH = compilerPaths.c_compiler_path;
+  DEBUGGER_PATH = compilerPaths.debugger_path;
+  MAKE_PATH = compilerPaths.make_path;
 }
 
 function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
@@ -80,8 +115,6 @@ function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   );
 
   context?.subscriptions.push(generateCCommandDisposable);
-
-  isCProject = true;
 }
 
 function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
@@ -107,11 +140,10 @@ function initGenerateCMinimalCommandDisposable(
   generateCMinimalCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     writeMinimalFiles,
+    false,
   );
 
   context?.subscriptions.push(generateCMinimalCommandDisposable);
-
-  isCProject = true;
 }
 
 function initGenerateCppMinimalCommandDisposable(
@@ -123,80 +155,26 @@ function initGenerateCppMinimalCommandDisposable(
   generateCppMinimalCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     writeMinimalFiles,
+    true,
   );
 
   context?.subscriptions.push(generateCppMinimalCommandDisposable);
 }
 
 function getFilepaths() {
-  if (!extensionPath || !workspaceFolder || !operatingSystem) {
+  if (!extensionPath || !workspaceFolder || !OPERATING_SYSTEM) {
     return {};
   }
 
-  const templateOsPath = path.join(extensionPath, 'templates', operatingSystem);
+  const templateOsPath = path.join(
+    extensionPath,
+    'templates',
+    OPERATING_SYSTEM,
+  );
   const templatePath = path.join(extensionPath, 'templates');
   const vscodePath = path.join(workspaceFolder, '.vscode');
 
   return { templateOsPath, templatePath, vscodePath };
-}
-
-function checkCompilers() {
-  if (!operatingSystem) return;
-
-  if (operatingSystem === OperatingSystems.windows) {
-    checkCompilersWindows();
-  } else if (operatingSystem === OperatingSystems.linux) {
-    checkCompilersLinux();
-  } else {
-    checkCompilersMac();
-  }
-}
-
-function checkCompilersWindows() {
-  const searchCygwin64 = 'C:/cygwin64/bin/';
-  const searchCygwin32 = 'C:/cygwin/bin/';
-  let cygwinInstallation: string;
-
-  if (pathExists(searchCygwin64)) {
-    cygwinInstallation = searchCygwin64;
-  } else if (pathExists(searchCygwin32)) {
-    cygwinInstallation = searchCygwin32;
-  } else {
-    cygwinInstallation = '';
-  }
-
-  C_COMPILER_PATH = path.join(cygwinInstallation, 'gcc.exe');
-  CPP_COMPILER_PATH = path.join(cygwinInstallation, 'g++.exe');
-  DEBUGGER_PATH = path.join(cygwinInstallation, 'gdb.exe');
-  MAKE_PATH = path.join(cygwinInstallation, 'make.exe');
-}
-
-function checkCompilersLinux() {
-  const userPath = '/usr/bin/';
-
-  C_COMPILER_PATH = path.join(userPath, 'gcc');
-  CPP_COMPILER_PATH = path.join(userPath, 'g++');
-  DEBUGGER_PATH = path.join(userPath, 'gdb');
-  MAKE_PATH = path.join(userPath, 'make');
-
-  if (!pathExists(C_COMPILER_PATH)) C_COMPILER_PATH = 'gcc';
-  if (!pathExists(CPP_COMPILER_PATH)) CPP_COMPILER_PATH = 'g++';
-  if (!pathExists(DEBUGGER_PATH)) DEBUGGER_PATH = 'gdb';
-  if (!pathExists(MAKE_PATH)) MAKE_PATH = 'make';
-}
-
-function checkCompilersMac() {
-  const userPath = '/usr/bin/';
-
-  C_COMPILER_PATH = path.join(userPath, 'clang');
-  CPP_COMPILER_PATH = path.join(userPath, 'clang++');
-  DEBUGGER_PATH = path.join(userPath, 'lldb');
-  MAKE_PATH = path.join(userPath, 'make');
-
-  if (!pathExists(C_COMPILER_PATH)) C_COMPILER_PATH = 'gcc';
-  if (!pathExists(CPP_COMPILER_PATH)) CPP_COMPILER_PATH = 'g++';
-  if (!pathExists(DEBUGGER_PATH)) DEBUGGER_PATH = 'gdb';
-  if (!pathExists(MAKE_PATH)) MAKE_PATH = 'make';
 }
 
 function writeFiles(isCppCommand: boolean) {
@@ -218,8 +196,8 @@ function writeFiles(isCppCommand: boolean) {
       );
       if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
       if (
-        operatingSystem !== undefined &&
-        operatingSystem !== OperatingSystems.mac
+        OPERATING_SYSTEM !== undefined &&
+        OPERATING_SYSTEM !== OperatingSystems.mac
       ) {
         templateData = replaceLaunch(templateData);
       }
@@ -249,10 +227,10 @@ function writeFiles(isCppCommand: boolean) {
     }
   });
 
-  writeRootDirFiles(templatePath);
+  writeRootDirFiles(templatePath, isCppCommand);
 }
 
-function writeMinimalFiles() {
+function writeMinimalFiles(isCppProject: boolean) {
   const { templateOsPath, templatePath, vscodePath } = getFilepaths();
   if (!templateOsPath || !templatePath || !vscodePath) return;
 
@@ -261,17 +239,17 @@ function writeMinimalFiles() {
   if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
   writeLocalVscodeDirMinimalFiles(vscodePath, templateOsPath);
-  writeRootDirFiles(templatePath);
+  writeRootDirFiles(templatePath, isCppProject);
 }
 
-function writeRootDirFiles(templatePath: string) {
+function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
   ROOT_DIR_FILES.forEach((filename) => {
     if (!workspaceFolder) return;
 
     const targetFilename = path.join(workspaceFolder, filename);
     let templateFilename = path.join(templatePath, filename);
 
-    if (filename === '.clang-tidy' && isCProject) {
+    if (filename === '.clang-tidy' && !isCppProject) {
       templateFilename = templateFilename.replace(
         '.clang-tidy',
         '.clang-tidy_c',
@@ -295,88 +273,4 @@ function writeLocalVscodeDirMinimalFiles(
     templateData = removeFullEntries(templateData);
     writeJsonFile(targetFilename, templateData);
   });
-}
-
-function replaceLanguageLaunch(data: { [key: string]: any }) {
-  data['configurations'][0]['name'] = data['configurations'][0]['name'].replace(
-    'C:',
-    'Cpp:',
-  );
-  data['configurations'][0]['preLaunchTask'] = data['configurations'][0][
-    'preLaunchTask'
-  ].replace('C:', 'Cpp:');
-
-  data['configurations'][1]['name'] = data['configurations'][1]['name'].replace(
-    'C:',
-    'Cpp:',
-  );
-  data['configurations'][1]['preLaunchTask'] = data['configurations'][1][
-    'preLaunchTask'
-  ].replace('C:', 'Cpp:');
-
-  return data;
-}
-
-function replaceLanguageTasks(data: { [key: string]: any }) {
-  data['tasks'][0]['args'][4] = 'CPP_COMPILER=${config:compilerCpp}';
-  data['tasks'][0]['args'][5] = 'LANGUAGE_MODE=Cpp';
-
-  data['tasks'][1]['args'][4] = 'CPP_COMPILER=${config:compilerCpp}';
-  data['tasks'][1]['args'][5] = 'LANGUAGE_MODE=Cpp';
-
-  data['tasks'][2]['label'] = data['tasks'][2]['label'].replace('C:', 'Cpp:');
-  data['tasks'][2]['args'][5] = 'CPP_COMPILER=${config:compilerCpp}';
-  data['tasks'][2]['args'][6] = 'LANGUAGE_MODE=Cpp';
-
-  data['tasks'][3]['label'] = data['tasks'][3]['label'].replace('C:', 'Cpp:');
-  data['tasks'][3]['args'][5] = 'CPP_COMPILER=${config:compilerCpp}';
-  data['tasks'][3]['args'][6] = 'LANGUAGE_MODE=Cpp';
-
-  data['tasks'][4]['label'] = data['tasks'][4]['label'].replace('C:', 'Cpp:');
-  data['tasks'][5]['label'] = data['tasks'][5]['label'].replace('C:', 'Cpp:');
-
-  return data;
-}
-
-function removeFullEntries(data: { [key: string]: any }) {
-  delete data['compilerC'];
-  delete data['compilerCpp'];
-  delete data['make'];
-
-  return data;
-}
-
-function replaceSettings(data: { [key: string]: any }) {
-  data['compilerC'] = replaceValueBasedOnEnv(C_COMPILER_PATH);
-  data['compilerCpp'] = replaceValueBasedOnEnv(CPP_COMPILER_PATH);
-  data['make'] = replaceValueBasedOnEnv(MAKE_PATH);
-
-  return data;
-}
-
-function replaceLaunch(data: { [key: string]: any }) {
-  data['configurations'][0]['miDebuggerPath'] = replaceValueBasedOnEnv(
-    DEBUGGER_PATH,
-  );
-  data['configurations'][1]['miDebuggerPath'] = replaceValueBasedOnEnv(
-    DEBUGGER_PATH,
-  );
-
-  return data;
-}
-
-function replaceProperties(data: { [key: string]: any }) {
-  data['configurations'][0]['compilerPath'] = replaceValueBasedOnEnv(
-    C_COMPILER_PATH,
-  );
-
-  return data;
-}
-
-function replaceValueBasedOnEnv(path: string) {
-  if (operatingSystem === OperatingSystems.windows) {
-    path = replaceBackslashes(path);
-  }
-
-  return path;
 }

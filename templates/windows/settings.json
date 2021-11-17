@@ -1,7 +1,8 @@
 {
-    "compilerC": "gcc",
-    "compilerCpp": "g++",
-    "make": "make",
+    "C_Cpp_Config.cCompilerPath": "gcc",
+    "C_Cpp_Config.cppCompilerPath": "g++",
+    "C_Cpp_Config.debuggerPath": "gdb",
+    "C_Cpp_Config.makePath": "make",
     // Editor settings
     "editor.tabSize": 4,
     "editor.rulers": [80, 120],
