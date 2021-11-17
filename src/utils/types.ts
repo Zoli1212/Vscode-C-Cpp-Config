@@ -3,3 +3,7 @@ export enum OperatingSystems {
   linux = 'linux',
   mac = 'macos',
 }
+
+export interface JsonSettings {
+  [name: string]: string;
+}

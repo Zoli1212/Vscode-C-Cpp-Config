@@ -14,6 +14,7 @@ import {
 	replaceLaunch,
 	replaceProperties,
 	replaceSettings,
+	updateSetting,
 } from './replacer';
 import {
 	mkdirRecursive,
@@ -29,10 +30,8 @@ let generateCCommandDisposable: vscode.Disposable | undefined;
 let generateCppCommandDisposable: vscode.Disposable | undefined;
 let generateCMinimalCommandDisposable: vscode.Disposable | undefined;
 let generateCppMinimalCommandDisposable: vscode.Disposable | undefined;
-let workspaceFolder: string | undefined;
 let extensionPath: string | undefined;
 
-const EXTENSION_NAME = 'C_Cpp_Config';
 const VSCODE_DIR_FILES = [
   'launch.json',
   'tasks.json',
@@ -49,6 +48,8 @@ const ROOT_DIR_FILES = [
   '.gitignore',
 ];
 
+export const EXTENSION_NAME = 'C_Cpp_Config';
+export let WORKSPACE_FOLDER: string | undefined;
 export let C_COMPILER_PATH: string = 'gcc';
 export let CPP_COMPILER_PATH: string = 'g++';
 export let DEBUGGER_PATH: string = 'gdb';
@@ -65,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
+  WORKSPACE_FOLDER = vscode.workspace.workspaceFolders[0].uri.fsPath;
   extensionPath = context.extensionPath;
   OPERATING_SYSTEM = getOperatingSystem();
 
@@ -98,9 +99,11 @@ export function checkCompilers() {
   }
 
   C_COMPILER_PATH = compilerPaths.c_compiler_path;
-  CPP_COMPILER_PATH = compilerPaths.c_compiler_path;
+  CPP_COMPILER_PATH = compilerPaths.cpp_compiler_path;
   DEBUGGER_PATH = compilerPaths.debugger_path;
   MAKE_PATH = compilerPaths.make_path;
+
+  updateSetting();
 }
 
 function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
@@ -162,7 +165,7 @@ function initGenerateCppMinimalCommandDisposable(
 }
 
 function getFilepaths() {
-  if (!extensionPath || !workspaceFolder || !OPERATING_SYSTEM) {
+  if (!extensionPath || !WORKSPACE_FOLDER || !OPERATING_SYSTEM) {
     return {};
   }
 
@@ -172,7 +175,7 @@ function getFilepaths() {
     OPERATING_SYSTEM,
   );
   const templatePath = path.join(extensionPath, 'templates');
-  const vscodePath = path.join(workspaceFolder, '.vscode');
+  const vscodePath = path.join(WORKSPACE_FOLDER, '.vscode');
 
   return { templateOsPath, templatePath, vscodePath };
 }
@@ -244,9 +247,9 @@ function writeMinimalFiles(isCppProject: boolean) {
 
 function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
   ROOT_DIR_FILES.forEach((filename) => {
-    if (!workspaceFolder) return;
+    if (!WORKSPACE_FOLDER) return;
 
-    const targetFilename = path.join(workspaceFolder, filename);
+    const targetFilename = path.join(WORKSPACE_FOLDER, filename);
     let templateFilename = path.join(templatePath, filename);
 
     if (filename === '.clang-tidy' && !isCppProject) {
