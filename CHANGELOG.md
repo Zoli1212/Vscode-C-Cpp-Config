@@ -1,5 +1,11 @@
 # C/C++ Config Change Log
 
+## Version 2.0.0: November 17, 2021
+
+- **Info**: Added settings for the compiler tools
+- **Info**: Added lldb debugger extension as a dependency
+- **Improvement**: Added check for Apple M1 to use the lldb debugger extension
+
 ## Version 1.2.0: November 14, 2021
 
 - **Info**: Added own clang-tidy template for C projects

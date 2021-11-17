@@ -130,6 +130,7 @@
         "vscode-test": "^1.6.1"
     },
     "extensionDependencies": [
-        "ms-vscode.cpptools"
+        "ms-vscode.cpptools",
+        "vadimcn.vscode-lldb"
     ]
 }

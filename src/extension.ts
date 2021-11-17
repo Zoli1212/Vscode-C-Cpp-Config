@@ -14,6 +14,7 @@ import {
 	replaceLaunch,
 	replaceProperties,
 	replaceSettings,
+	setMacDebuggerType,
 	updateSetting,
 } from './replacer';
 import {
@@ -203,6 +204,9 @@ function writeFiles(isCppCommand: boolean) {
         OPERATING_SYSTEM !== OperatingSystems.mac
       ) {
         templateData = replaceLaunch(templateData);
+      }
+      if (OPERATING_SYSTEM === OperatingSystems.mac) {
+        setMacDebuggerType(templateData);
       }
       writeJsonFile(targetFilename, templateData);
     } else if (filename === 'c_cpp_properties.json') {

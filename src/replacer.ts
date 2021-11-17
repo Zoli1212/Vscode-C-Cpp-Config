@@ -14,6 +14,7 @@ import {
 	replaceBackslashes,
 	writeJsonFile,
 } from './utils/fileUtils';
+import { getCompilerArchitecture } from './utils/systemUtils';
 import { JsonSettings, OperatingSystems } from './utils/types';
 
 export function replaceLanguageLaunch(data: { [key: string]: any }) {
@@ -110,6 +111,20 @@ export function replaceValueBasedOnEnv(path: string) {
   }
 
   return path;
+}
+
+export function setMacDebuggerType(data: { [key: string]: any }) {
+  const isArmArchitecture = getCompilerArchitecture(C_COMPILER_PATH);
+
+  if (isArmArchitecture) {
+    for (let i = 0; i < data['configurations'].length; i++) {
+      if (data['configurations'][i]['type'] === 'cppdbg') {
+        data['configurations'][i]['type'] = 'lldb';
+      }
+    }
+  }
+
+  return data;
 }
 
 export function updateSetting() {
