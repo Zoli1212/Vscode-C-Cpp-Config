@@ -114,6 +114,12 @@ function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   generateCCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     () => {
+      if (WORKSPACE_FOLDER?.toLowerCase().includes('udemycpp')) {
+        vscode.window.showErrorMessage(
+          'Please use the "Generate C Config Files" command!',
+        );
+      }
+
       writeFiles(false);
     },
   );
@@ -128,6 +134,15 @@ function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   generateCppCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     () => {
+      if (
+        WORKSPACE_FOLDER?.toLowerCase().includes('udemyc') &&
+        !WORKSPACE_FOLDER?.toLowerCase().includes('udemycpp')
+      ) {
+        vscode.window.showErrorMessage(
+          'Please use the "Generate C++ Config Files" command!',
+        );
+      }
+
       writeFiles(true);
     },
   );
