@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 2.2.0: November 24, 2021
+
+- **Info**: Fixed user issues ;)
+
 ## Version 2.1.0: November 23, 2021
 
 - **Info**: Added error message when running the incorrect command

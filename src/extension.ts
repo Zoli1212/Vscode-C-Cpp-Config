@@ -107,6 +107,16 @@ export function checkCompilers() {
   updateSetting();
 }
 
+function isCCourse(currentFolder: string) {
+  return (
+    currentFolder.includes('udemyc') && !currentFolder.includes('udemycpp')
+  );
+}
+
+function isCppCourse(currentFolder: string) {
+  return currentFolder.includes('udemycpp');
+}
+
 function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   if (generateCCommandDisposable) return;
 
@@ -114,13 +124,14 @@ function initGenerateCCommandDisposable(context: vscode.ExtensionContext) {
   generateCCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     () => {
-      if (WORKSPACE_FOLDER?.toLowerCase().includes('udemycpp')) {
-        vscode.window.showErrorMessage(
-          'Please use the "Generate C Config Files" command!',
-        );
+      const currentFolder = WORKSPACE_FOLDER?.toLowerCase();
+
+      if (currentFolder && isCppCourse(currentFolder)) {
+        writeFiles(true); // C command, called in Cpp course
+        return;
       }
 
-      writeFiles(false);
+      writeFiles(false); // C command, correctly called
     },
   );
 
@@ -134,16 +145,14 @@ function initGenerateCppCommandDisposable(context: vscode.ExtensionContext) {
   generateCppCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
     () => {
-      if (
-        WORKSPACE_FOLDER?.toLowerCase().includes('udemyc') &&
-        !WORKSPACE_FOLDER?.toLowerCase().includes('udemycpp')
-      ) {
-        vscode.window.showErrorMessage(
-          'Please use the "Generate C++ Config Files" command!',
-        );
+      const currentFolder = WORKSPACE_FOLDER?.toLowerCase();
+
+      if (currentFolder && isCCourse(currentFolder)) {
+        writeFiles(false); // Cpp command, called in C course
+        return;
       }
 
-      writeFiles(true);
+      writeFiles(true); // Cpp command, correctly called
     },
   );
 
@@ -158,8 +167,16 @@ function initGenerateCMinimalCommandDisposable(
   const CommanddName = `${EXTENSION_NAME}.generateConfigCMinimal`;
   generateCMinimalCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
-    writeMinimalFiles,
-    false,
+    () => {
+      const currentFolder = WORKSPACE_FOLDER?.toLowerCase();
+
+      if (currentFolder && isCppCourse(currentFolder)) {
+        writeMinimalFiles(true); // C command, called in Cpp course
+        return;
+      }
+
+      writeMinimalFiles(false); // C command, correctly called
+    },
   );
 
   context?.subscriptions.push(generateCMinimalCommandDisposable);
@@ -173,8 +190,16 @@ function initGenerateCppMinimalCommandDisposable(
   const CommanddName = `${EXTENSION_NAME}.generateConfigCppMinimal`;
   generateCppMinimalCommandDisposable = vscode.commands.registerCommand(
     CommanddName,
-    writeMinimalFiles,
-    true,
+    () => {
+      const currentFolder = WORKSPACE_FOLDER?.toLowerCase();
+
+      if (currentFolder && isCCourse(currentFolder)) {
+        writeMinimalFiles(false); // C command, called in Cpp course
+        return;
+      }
+
+      writeMinimalFiles(true); // Cpp command, correctly called
+    },
   );
 
   context?.subscriptions.push(generateCppMinimalCommandDisposable);
