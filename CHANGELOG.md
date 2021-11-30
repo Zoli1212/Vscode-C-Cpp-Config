@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 2.3.0: November 30, 2021
+
+- **Info**: Added markdown render mode
+
 ## Version 2.2.0: November 24, 2021
 
 - **Info**: Fixed user issues ;)

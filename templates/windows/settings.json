@@ -18,6 +18,10 @@
     "files.associations": {
         ".clang*": "yaml"
     },
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook",
+        "*.md": "vscode.markdown.preview.editor"
+    },
     // Workbench settings
     "workbench.startupEditor": "newUntitledFile",
     // Git settings
