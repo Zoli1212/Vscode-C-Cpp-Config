@@ -31,7 +31,7 @@
         "url": "https://github.com/franneck94/vscode-c-cpp-config/issues"
     },
     "activationEvents": [
-        "*"
+        "onStartupFinished"
     ],
     "main": "./dist/main",
     "contributes": {
