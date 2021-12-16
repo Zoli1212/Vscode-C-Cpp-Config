@@ -19,7 +19,6 @@
         ".clang*": "yaml"
     },
     "workbench.editorAssociations": {
-        "*.ipynb": "jupyter-notebook",
         "*.md": "vscode.markdown.preview.editor"
     },
     // Workbench settings
@@ -30,12 +29,6 @@
     "git.confirmSync": false,
     // C/C++
     "C_Cpp.clang_format_sortIncludes": true,
-    "C_Cpp.vcFormat.indent.preserveComments": true,
-    "C_Cpp.vcFormat.indent.namespaceContents": false,
-    "C_Cpp.vcFormat.indent.caseContentsWhenBlock": true,
-    "C_Cpp.vcFormat.space.pointerReferenceAlignment": "right",
-    "C_Cpp.simplifyStructuredComments": false,
-    "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": false,
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c99",
     "C_Cpp.formatting": "clangFormat",
@@ -65,6 +58,11 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-vscode.cpptools"
     },
-    // Other extensions
-    "formatContextMenu.closeAfterSave": true
+    "Workspace_Formatter.includePattern": [
+        "*.c",
+        "*.h",
+        "*.cc",
+        "*.hh",
+        "*.hpp"
+    ]
 }
