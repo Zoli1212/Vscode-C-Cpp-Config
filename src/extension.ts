@@ -222,14 +222,18 @@ function getFilepaths() {
 }
 
 function writeFiles(isCppCommand: boolean) {
-  try {
-    const { templateOsPath, templatePath, vscodePath } = getFilepaths();
-    if (!templateOsPath || !templatePath || !vscodePath) return;
+  const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+  if (!templateOsPath || !templatePath || !vscodePath) return;
 
-    checkCompilers();
+  checkCompilers();
 
-    if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+  if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
+  // Still not exist due to somewhat mkdir error
+  if (!pathExists(vscodePath)) {
+    const message = 'Error: .vscode folder could not be generated.';
+    vscode.window.showErrorMessage(message);
+  } else {
     VSCODE_DIR_FILES.forEach((filename) => {
       const targetFilename = path.join(vscodePath, filename);
       const templateFilename = path.join(templatePath, filename);
@@ -271,30 +275,34 @@ function writeFiles(isCppCommand: boolean) {
       } else {
         // Makefile
         const templateData = fs.readFileSync(templateFilename);
-        fs.writeFileSync(targetFilename, templateData);
+
+        try {
+          fs.writeFileSync(targetFilename, templateData);
+        } catch (err) {}
       }
     });
-
-    writeRootDirFiles(templatePath, isCppCommand);
-  } catch (e) {
-    vscode.window.showErrorMessage(e);
   }
+
+  writeRootDirFiles(templatePath, isCppCommand);
 }
 
 function writeMinimalFiles(isCppProject: boolean) {
-  try {
-    const { templateOsPath, templatePath, vscodePath } = getFilepaths();
-    if (!templateOsPath || !templatePath || !vscodePath) return;
+  const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+  if (!templateOsPath || !templatePath || !vscodePath) return;
 
-    checkCompilers();
+  checkCompilers();
 
-    if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+  if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
+  // Still not exist due to somewhat mkdir error
+  if (!pathExists(vscodePath)) {
+    const message = 'Error: .vscode folder could not be generated.';
+    vscode.window.showErrorMessage(message);
+  } else {
     writeLocalVscodeDirMinimalFiles(vscodePath, templateOsPath);
-    writeRootDirFiles(templatePath, isCppProject);
-  } catch (e) {
-    vscode.window.showErrorMessage(e);
   }
+
+  writeRootDirFiles(templatePath, isCppProject);
 }
 
 function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
@@ -312,7 +320,10 @@ function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
     }
 
     const templateData = fs.readFileSync(templateFilename);
-    fs.writeFileSync(targetFilename, templateData);
+
+    try {
+      fs.writeFileSync(targetFilename, templateData);
+    } catch (err) {}
   });
 }
 

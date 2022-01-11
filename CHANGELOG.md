@@ -1,5 +1,13 @@
 # C/C++ Config Change Log
 
+## Version 2.4.1: January 11, 2022
+
+- **Bugfix**: Added try/catch for issues with creating .vscode folder.
+
+## Version 2.4.0: December 15, 2021
+
+- **Info**: n/a
+
 ## Version 2.3.1: December 2, 2021
 
 - **Info**:Updated clang-tidy
