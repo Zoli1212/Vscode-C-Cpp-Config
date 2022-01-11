@@ -222,71 +222,79 @@ function getFilepaths() {
 }
 
 function writeFiles(isCppCommand: boolean) {
-  const { templateOsPath, templatePath, vscodePath } = getFilepaths();
-  if (!templateOsPath || !templatePath || !vscodePath) return;
+  try {
+    const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+    if (!templateOsPath || !templatePath || !vscodePath) return;
 
-  checkCompilers();
+    checkCompilers();
 
-  if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+    if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
-  VSCODE_DIR_FILES.forEach((filename) => {
-    const targetFilename = path.join(vscodePath, filename);
-    const templateFilename = path.join(templatePath, filename);
-    const templateOsFilename = path.join(templateOsPath, filename);
+    VSCODE_DIR_FILES.forEach((filename) => {
+      const targetFilename = path.join(vscodePath, filename);
+      const templateFilename = path.join(templatePath, filename);
+      const templateOsFilename = path.join(templateOsPath, filename);
 
-    if (filename === 'launch.json') {
-      let templateData: { [key: string]: string } = readJsonFile(
-        templateOsFilename,
-      );
-      if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
-      if (
-        OPERATING_SYSTEM !== undefined &&
-        OPERATING_SYSTEM !== OperatingSystems.mac
-      ) {
-        templateData = replaceLaunch(templateData);
+      if (filename === 'launch.json') {
+        let templateData: { [key: string]: string } = readJsonFile(
+          templateOsFilename,
+        );
+        if (isCppCommand) templateData = replaceLanguageLaunch(templateData);
+        if (
+          OPERATING_SYSTEM !== undefined &&
+          OPERATING_SYSTEM !== OperatingSystems.mac
+        ) {
+          templateData = replaceLaunch(templateData);
+        }
+        if (OPERATING_SYSTEM === OperatingSystems.mac) {
+          setMacDebuggerType(templateData);
+        }
+        writeJsonFile(targetFilename, templateData);
+      } else if (filename === 'c_cpp_properties.json') {
+        let templateData: { [key: string]: string } = readJsonFile(
+          templateOsFilename,
+        );
+        templateData = replaceProperties(templateData);
+        writeJsonFile(targetFilename, templateData);
+      } else if (filename === 'settings.json') {
+        let templateData: { [key: string]: string } = readJsonFile(
+          templateOsFilename,
+        );
+        templateData = replaceSettings(templateData);
+        writeJsonFile(targetFilename, templateData);
+      } else if (filename === 'tasks.json') {
+        let templateData: { [key: string]: string } = readJsonFile(
+          templateFilename,
+        );
+        if (isCppCommand) templateData = replaceLanguageTasks(templateData);
+        writeJsonFile(targetFilename, templateData);
+      } else {
+        // Makefile
+        const templateData = fs.readFileSync(templateFilename);
+        fs.writeFileSync(targetFilename, templateData);
       }
-      if (OPERATING_SYSTEM === OperatingSystems.mac) {
-        setMacDebuggerType(templateData);
-      }
-      writeJsonFile(targetFilename, templateData);
-    } else if (filename === 'c_cpp_properties.json') {
-      let templateData: { [key: string]: string } = readJsonFile(
-        templateOsFilename,
-      );
-      templateData = replaceProperties(templateData);
-      writeJsonFile(targetFilename, templateData);
-    } else if (filename === 'settings.json') {
-      let templateData: { [key: string]: string } = readJsonFile(
-        templateOsFilename,
-      );
-      templateData = replaceSettings(templateData);
-      writeJsonFile(targetFilename, templateData);
-    } else if (filename === 'tasks.json') {
-      let templateData: { [key: string]: string } = readJsonFile(
-        templateFilename,
-      );
-      if (isCppCommand) templateData = replaceLanguageTasks(templateData);
-      writeJsonFile(targetFilename, templateData);
-    } else {
-      // Makefile
-      const templateData = fs.readFileSync(templateFilename);
-      fs.writeFileSync(targetFilename, templateData);
-    }
-  });
+    });
 
-  writeRootDirFiles(templatePath, isCppCommand);
+    writeRootDirFiles(templatePath, isCppCommand);
+  } catch (e) {
+    vscode.window.showErrorMessage(e);
+  }
 }
 
 function writeMinimalFiles(isCppProject: boolean) {
-  const { templateOsPath, templatePath, vscodePath } = getFilepaths();
-  if (!templateOsPath || !templatePath || !vscodePath) return;
+  try {
+    const { templateOsPath, templatePath, vscodePath } = getFilepaths();
+    if (!templateOsPath || !templatePath || !vscodePath) return;
 
-  checkCompilers();
+    checkCompilers();
 
-  if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
+    if (!pathExists(vscodePath)) mkdirRecursive(vscodePath);
 
-  writeLocalVscodeDirMinimalFiles(vscodePath, templateOsPath);
-  writeRootDirFiles(templatePath, isCppProject);
+    writeLocalVscodeDirMinimalFiles(vscodePath, templateOsPath);
+    writeRootDirFiles(templatePath, isCppProject);
+  } catch (e) {
+    vscode.window.showErrorMessage(e);
+  }
 }
 
 function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
