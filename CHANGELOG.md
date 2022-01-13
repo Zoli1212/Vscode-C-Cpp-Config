@@ -1,8 +1,12 @@
 # C/C++ Config Change Log
 
+## Version 2.4.2: January 13, 2022
+
+- **Info**: Improved compiler search
+
 ## Version 2.4.1: January 11, 2022
 
-- **Bugfix**: Added try/catch for issues with creating .vscode folder.
+- **Bugfix**: Added try/catch for issues with creating .vscode folder
 
 ## Version 2.4.0: December 15, 2021
 
