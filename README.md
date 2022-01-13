@@ -27,9 +27,14 @@ Following files will be created in the root directory for all commands:
 
 ## Software Requirements
 
-- 🔧 Windows: gcc/g++/gdb/make with **Cygwin**
-- 🔧 Linux: gcc/g++/gdb/make with package manager (e.g. **apt**)
-- 🔧 MacOS: clang/clang++/lldb/make with xcode
+- 🔧 Windows:
+  - gcc/g++/gdb/make with **Cygwin**
+- 🔧 Linux:
+  - Alternative 1: gcc/g++/gdb/make
+  - Alternative 2: clang/clang++/ldb/make
+- 🔧 MacOS:
+  - Alternative 1: clang/clang++/lldb/make
+  - Alternative 2: gcc/g++/gdb/make
 
 ## How to use
 
