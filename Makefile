@@ -27,5 +27,9 @@ clean:
 	rm -f test/CppMinimal/.gitattributes
 	rm -f test/CppMinimal/.gitignore
 	rm -f test/CppMinimal/*.exe
+	rm -rf test/CMinimal*.out
+	rm -rf test/CppMinimal*.out
+	rm -rf test/C*.out
+	rm -rf test/Cpp*.out
 
 .phony: clean

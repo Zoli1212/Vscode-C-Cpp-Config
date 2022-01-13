@@ -10,11 +10,11 @@ package-lock.json
 *.log
 *.exe
 
-testC/
-!testC/main.c
-testCpp/
-!testCpp/main.cc
-testCMinimal/
-!testCMinimal/main.c
-testCppMinimal/
-!testCppMinimal/main.cc
+test/C/
+!test/C/main.c
+test/Cpp/
+!test/Cpp/main.cc
+test/CMinimal/
+!test/CMinimal/main.c
+test/CppMinimal/
+!test/CppMinimal/main.cc
