@@ -3,24 +3,31 @@ import * as path from 'path';
 import { pathExists } from './utils/fileUtils';
 
 export function checkCompilersWindows() {
-  const searchCygwin64 = 'C:/cygwin64/bin/';
-  const searchCygwin32 = 'C:/cygwin/bin/';
-  let cygwinInstallation: string;
-
-  if (pathExists(searchCygwin64)) {
-    cygwinInstallation = searchCygwin64;
-  } else if (pathExists(searchCygwin32)) {
-    cygwinInstallation = searchCygwin32;
-  } else {
-    cygwinInstallation = '';
-  }
-
+  let cygwinFromEnvPath: string | undefined;
   const env = process.env;
   if (env['PATH']) {
     let paths: string[] = [];
     paths = env['PATH'].split(';');
 
-    console.log(paths);
+    paths = paths.filter((path: string) =>
+      path.toLowerCase().includes('cygwin'),
+    );
+
+    cygwinFromEnvPath = paths[0];
+  }
+
+  const searchCygwin64 = 'C:/cygwin64/bin/';
+  const searchCygwin32 = 'C:/cygwin/bin/';
+  let cygwinInstallation: string;
+
+  if (cygwinFromEnvPath && pathExists(cygwinFromEnvPath)) {
+    cygwinInstallation = cygwinFromEnvPath;
+  } else if (pathExists(searchCygwin64)) {
+    cygwinInstallation = searchCygwin64;
+  } else if (pathExists(searchCygwin32)) {
+    cygwinInstallation = searchCygwin32;
+  } else {
+    cygwinInstallation = '';
   }
 
   const c_compiler_path = path.join(cygwinInstallation, 'gcc.exe');
