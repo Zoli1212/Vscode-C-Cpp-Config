@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 2.4.3: January 14, 2022
+
+- **Info**: Improved compiler search
+
 ## Version 2.4.2: January 13, 2022
 
 - **Info**: Improved compiler search

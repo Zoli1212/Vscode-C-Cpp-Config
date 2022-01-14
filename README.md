@@ -28,7 +28,8 @@ Following files will be created in the root directory for all commands:
 ## Software Requirements
 
 - 🔧 Windows:
-  - gcc/g++/gdb/make with **Cygwin**
+  - Alternative 1: gcc/g++/gdb/make with **Cygwin**
+  - Alternative 2: clang/clang++/ldb/make with **LLVM**
 - 🔧 Linux:
   - Alternative 1: gcc/g++/gdb/make
   - Alternative 2: clang/clang++/ldb/make

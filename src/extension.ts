@@ -273,10 +273,9 @@ function writeFiles(isCppCommand: boolean) {
         if (isCppCommand) templateData = replaceLanguageTasks(templateData);
         writeJsonFile(targetFilename, templateData);
       } else {
-        // Makefile
-        const templateData = fs.readFileSync(templateFilename);
-
         try {
+          // Makefile
+          const templateData = fs.readFileSync(templateFilename);
           fs.writeFileSync(targetFilename, templateData);
         } catch (err) {}
       }
@@ -319,9 +318,8 @@ function writeRootDirFiles(templatePath: string, isCppProject: boolean) {
       );
     }
 
-    const templateData = fs.readFileSync(templateFilename);
-
     try {
+      const templateData = fs.readFileSync(templateFilename);
       fs.writeFileSync(targetFilename, templateData);
     } catch (err) {}
   });

@@ -2,38 +2,42 @@ import * as path from 'path';
 
 import { pathExists } from './utils/fileUtils';
 
-export function checkCompilersWindows() {
-  let cygwinFromEnvPath: string | undefined;
+function findInstallationInPath(installation: string) {
+  let fromPath: string | undefined;
+
   const env = process.env;
   if (env['PATH']) {
     let paths: string[] = [];
     paths = env['PATH'].split(';');
 
     paths = paths.filter((path: string) =>
-      path.toLowerCase().includes('cygwin'),
+      path.toLowerCase().includes(installation.toLowerCase()),
     );
 
-    cygwinFromEnvPath = paths[0];
+    fromPath = paths[0];
   }
 
-  const searchCygwin64 = 'C:/cygwin64/bin/';
-  const searchCygwin32 = 'C:/cygwin/bin/';
-  let cygwinInstallation: string;
+  return fromPath;
+}
 
-  if (cygwinFromEnvPath && pathExists(cygwinFromEnvPath)) {
-    cygwinInstallation = cygwinFromEnvPath;
-  } else if (pathExists(searchCygwin64)) {
-    cygwinInstallation = searchCygwin64;
-  } else if (pathExists(searchCygwin32)) {
-    cygwinInstallation = searchCygwin32;
+export function checkCompilersWindows() {
+  let compilerInstallation: string;
+
+  const cygwinCompilerInstallation = findInstallationInPath('cygwin');
+  const llvmCompilerInstallation = findInstallationInPath('LLVM');
+
+  if (cygwinCompilerInstallation) {
+    compilerInstallation = cygwinCompilerInstallation;
+  } else if (llvmCompilerInstallation) {
+    compilerInstallation = llvmCompilerInstallation;
   } else {
-    cygwinInstallation = '';
+    compilerInstallation = '';
   }
 
-  const c_compiler_path = path.join(cygwinInstallation, 'gcc.exe');
-  const cpp_compiler_path = path.join(cygwinInstallation, 'g++.exe');
-  const debugger_path = path.join(cygwinInstallation, 'gdb.exe');
-  const make_path = path.join(cygwinInstallation, 'make.exe');
+  const c_compiler_path = path.join(compilerInstallation, 'gcc.exe');
+  const cpp_compiler_path = path.join(compilerInstallation, 'g++.exe');
+  const debugger_path = path.join(compilerInstallation, 'gdb.exe');
+  const make_path = path.join(compilerInstallation, 'make.exe');
 
   return { c_compiler_path, cpp_compiler_path, debugger_path, make_path };
 }
