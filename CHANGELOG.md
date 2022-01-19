@@ -1,5 +1,9 @@
 # C/C++ Config Change Log
 
+## Version 2.5.0: January 19, 2022
+
+- **Info**: Updated clang-format
+
 ## Version 2.4.3: January 14, 2022
 
 - **Info**: Improved compiler search
